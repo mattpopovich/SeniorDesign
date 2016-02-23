@@ -28,12 +28,10 @@ Public Class MainForm
 
         Dim returnStr As String = ""
 
-        'SerialPort1.Close()
 
         Try
-            'SerialPort1.Open()
             SerialPort1.Close()
-            SerialPort1.PortName = "COM31" 'change com port to match your Arduino port
+            SerialPort1.PortName = "COM4" 'change com port to match your Arduino port
             SerialPort1.BaudRate = 9600
             SerialPort1.DataBits = 8
             SerialPort1.Parity = Parity.None
@@ -50,7 +48,7 @@ Public Class MainForm
 
         End Try
 
-        'MessageBox.Show("COM Port Configured!", "SUCCESS")
+        MessageBox.Show("COM Port Configured!", "SUCCESS")
 
 
     End Sub
@@ -76,16 +74,13 @@ Public Class MainForm
         Dim returnStr As String = ""
 
         Try
-            writeData("1")
 
-            Do
-                Dim Incoming As String = SerialPort1.ReadLine()
-                If Incoming Is Nothing Then
-                    Exit Do
-                Else
-                    returnStr &= Incoming & vbCrLf
-                End If
-            Loop
+            Dim Incoming As String = SerialPort1.ReadLine()
+            If Incoming Is Nothing Then
+
+            Else
+                returnStr &= Incoming & vbCrLf
+            End If
 
         Catch ex As TimeoutException
             returnStr = "Error: Could not open serial port."
