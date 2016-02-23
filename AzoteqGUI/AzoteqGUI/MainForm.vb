@@ -7,16 +7,18 @@
 
 
 ' With help from: http://www.instructables.com/id/Using-Visual-Basic-to-control-Arduino-Uno/
+' But mainly from: http://www.martyncurrey.com/arduino-and-visual-basic-part-1-receiving-data-from-the-arduino/
+
+
 Imports System.IO
 Imports System.IO.Ports
-Imports System.Threading
 
 
 Public Class MainForm
 
-    Dim _continue As Boolean
-    Shared _serialPort As SerialPort
 
+    Dim comPort As String
+    Dim receivedData As String = ""
 
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -57,7 +59,7 @@ Public Class MainForm
 
         writeData("1")
 
-        
+
         Dim read As String = receiveData()
 
         MessageBox.Show(read)
