@@ -24,30 +24,35 @@ Partial Class MainForm
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Me.Button1 = New System.Windows.Forms.Button()
-        Me.ListBox1 = New System.Windows.Forms.ListBox()
+        Me.lstConsole = New System.Windows.Forms.ListBox()
         Me.SerialPort1 = New System.IO.Ports.SerialPort(Me.components)
         Me.lblCOM = New System.Windows.Forms.Label()
         Me.comCOM = New System.Windows.Forms.ComboBox()
         Me.chkConnected = New System.Windows.Forms.CheckBox()
         Me.tmrConnected = New System.Windows.Forms.Timer(Me.components)
+        Me.btnTest = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(129, 200)
+        Me.Button1.Location = New System.Drawing.Point(446, 200)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(75, 23)
         Me.Button1.TabIndex = 0
         Me.Button1.Text = "Read"
         Me.Button1.UseVisualStyleBackColor = True
         '
-        'ListBox1
+        'lstConsole
         '
-        Me.ListBox1.FormattingEnabled = True
-        Me.ListBox1.Location = New System.Drawing.Point(129, 84)
-        Me.ListBox1.Name = "ListBox1"
-        Me.ListBox1.Size = New System.Drawing.Size(120, 95)
-        Me.ListBox1.TabIndex = 1
+        Me.lstConsole.BackColor = System.Drawing.SystemColors.WindowText
+        Me.lstConsole.Font = New System.Drawing.Font("Consolas", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lstConsole.ForeColor = System.Drawing.SystemColors.Window
+        Me.lstConsole.FormattingEnabled = True
+        Me.lstConsole.HorizontalScrollbar = True
+        Me.lstConsole.Location = New System.Drawing.Point(12, 172)
+        Me.lstConsole.Name = "lstConsole"
+        Me.lstConsole.Size = New System.Drawing.Size(269, 160)
+        Me.lstConsole.TabIndex = 1
         '
         'lblCOM
         '
@@ -82,15 +87,25 @@ Partial Class MainForm
         Me.tmrConnected.Enabled = True
         Me.tmrConnected.Interval = 1000
         '
+        'btnTest
+        '
+        Me.btnTest.Location = New System.Drawing.Point(281, 149)
+        Me.btnTest.Name = "btnTest"
+        Me.btnTest.Size = New System.Drawing.Size(75, 23)
+        Me.btnTest.TabIndex = 6
+        Me.btnTest.Text = "Test"
+        Me.btnTest.UseVisualStyleBackColor = True
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(284, 262)
+        Me.ClientSize = New System.Drawing.Size(668, 344)
+        Me.Controls.Add(Me.btnTest)
         Me.Controls.Add(Me.chkConnected)
         Me.Controls.Add(Me.comCOM)
         Me.Controls.Add(Me.lblCOM)
-        Me.Controls.Add(Me.ListBox1)
+        Me.Controls.Add(Me.lstConsole)
         Me.Controls.Add(Me.Button1)
         Me.Name = "MainForm"
         Me.Text = "Azoteq IQS 316 GUI"
@@ -99,11 +114,12 @@ Partial Class MainForm
 
     End Sub
     Friend WithEvents Button1 As System.Windows.Forms.Button
-    Friend WithEvents ListBox1 As System.Windows.Forms.ListBox
+    Friend WithEvents lstConsole As System.Windows.Forms.ListBox
     Friend WithEvents SerialPort1 As System.IO.Ports.SerialPort
     Friend WithEvents lblCOM As System.Windows.Forms.Label
     Friend WithEvents comCOM As System.Windows.Forms.ComboBox
     Friend WithEvents chkConnected As System.Windows.Forms.CheckBox
     Friend WithEvents tmrConnected As System.Windows.Forms.Timer
+    Friend WithEvents btnTest As System.Windows.Forms.Button
 
 End Class
