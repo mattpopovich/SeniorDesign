@@ -3,14 +3,14 @@
 ' @author         Matt Popovich (popovivch.matt@gmail.com)
 ' @version        0.1
 ' @created on     February 19, 2016
-' @last modified  February 19, 2016
+' @last modified  February 23, 2016
 
 
 ' With help from: http://www.instructables.com/id/Using-Visual-Basic-to-control-Arduino-Uno/
 ' But mainly from: http://www.martyncurrey.com/arduino-and-visual-basic-part-1-receiving-data-from-the-arduino/
 
 
-Option Strict On    'Visual Basic won't automatically convert variables
+Option Strict On    'So Visual Basic won't automatically convert variables
 
 Imports System.IO
 Imports System.IO.Ports
@@ -30,30 +30,9 @@ Public Class MainForm
             comCOM.Items.Add(_serialPort)
         Next
 
-
-        
-
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
-        writeData("1")
-
-
-        Dim read As String = receiveData()
-
-        MessageBox.Show(read)
-
-
-        writeData("2")
-
-
-        read = receiveData()
-
-        MessageBox.Show(read)
-
-
-    End Sub
 
 
     ' Returns data from the serial port up to the newline character. 
@@ -76,15 +55,14 @@ Public Class MainForm
                 End If
             Loop
 
-            ' Add code here to append returnStr to Console list box
-
         Catch ex As TimeoutException
             returnStr = "Error: Serial Port time out."
-            ' Add code here to append returnStr to Console list box
         Catch ex As InvalidOperationException
             returnStr = "Error: Serial Port is closed."
-            ' Add code here to append returnStr to Console list box
         End Try
+
+        ' Add returnStr to console
+        writeConsole(returnStr)
 
         Return returnStr
 
@@ -100,18 +78,15 @@ Public Class MainForm
         Try
             SerialPort1.Write(data)     'Does not append newline character
         Catch ex As Exception
-            MessageBox.Show("Error: Could not write to serial port.", "ERROR")
+            MessageBox.Show("Could not write to serial port.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
-        ' Add code here to append data to Console list box
+        ' Add data to console
+        writeConsole(data)
 
     End Sub
 
-
-    Private Sub txtCOM_TextChanged(sender As Object, e As EventArgs)
-
-    End Sub
-
+    ' When the user selects a new COM Port
     Private Sub comCOM_SelectedIndexChanged(sender As Object, e As EventArgs) Handles comCOM.SelectedIndexChanged
 
         If (CStr(comCOM.SelectedItem) = "") Then
@@ -132,17 +107,62 @@ Public Class MainForm
 
                 SerialPort1.Open()
                 chkConnected.Checked = True
+                writeConsole("Connected via " + comPort)
 
             Catch ex As Exception
                 chkConnected.Checked = False
-                MessageBox.Show("Error: Serial Port read timed out.", "ERROR")
+                writeConsole("Connection via " + comPort + " has failed: timeout.")
+                MessageBox.Show("Serial Port read timed out.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
 
         End If
     End Sub
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-        chkConnected.Checked = Not CBool(chkConnected.CheckState)
+    ' Timer tick event every second
+    Private Sub tmrConnected_Tick(sender As Object, e As EventArgs) Handles tmrConnected.Tick
+
+        ' Check SerialPort connection every second
+        If ((SerialPort1.IsOpen = False) And (CBool(chkConnected.CheckState) = True)) Then
+            writeConsole("ERROR: Connection on " + comPort + " has been lost.")
+        End If
+        chkConnected.Checked = SerialPort1.IsOpen
+
+    End Sub
+
+    Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
+        'Test functions/interacting with other controls
+        writeConsole(CStr(Keys.Enter))
+        writeConsole(CStr(Keys.Return))
+    End Sub
+
+    ' Write to console and automatically scroll
+    Sub writeConsole(ByVal data As String)
+        lstConsole.Items.Add(data)
+        lstConsole.TopIndex = lstConsole.Items.Count - 1 - CInt(lstConsole.ItemHeight / 2)
+
+        ' TODO: Write all data received via serial port to console (think interrupt)
+        '       (not just stuff I want to read and write)
+    End Sub
+
+    ' When the user clicks on the 'Write' button
+    Private Sub btnWrite_Click(sender As Object, e As EventArgs) Handles btnWrite.Click
+        If (CStr(comCOM.SelectedItem) = "") Then
+            MessageBox.Show("Please select a COM Port first", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Else
+            writeData(txtWrite.Text)
+            txtWrite.Text = ""
+            receiveData()
+        End If
+
+        'TODO: Add disconnect button for COM
+    End Sub
+
+    ' When the user presses enter in the 'Write' text box
+    Private Sub txtWrite_KeyDown(sender As Object, e As KeyEventArgs) Handles txtWrite.KeyDown
+        ' Make sure user pressed the enter key and not any key
+        If (e.KeyCode = Keys.Enter) Then
+            btnWrite.PerformClick()
+        End If
     End Sub
 End Class
 
