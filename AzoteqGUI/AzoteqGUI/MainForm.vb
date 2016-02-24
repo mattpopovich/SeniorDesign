@@ -141,8 +141,10 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-        chkConnected.Checked = Not CBool(chkConnected.CheckState)
+
+    Private Sub tmrConnected_Tick(sender As Object, e As EventArgs) Handles tmrConnected.Tick
+        ' Check SerialPort connection every second
+        chkConnected.Checked = SerialPort1.IsOpen
     End Sub
 End Class
 

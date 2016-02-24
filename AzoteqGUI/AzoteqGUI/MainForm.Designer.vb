@@ -29,7 +29,7 @@ Partial Class MainForm
         Me.lblCOM = New System.Windows.Forms.Label()
         Me.comCOM = New System.Windows.Forms.ComboBox()
         Me.chkConnected = New System.Windows.Forms.CheckBox()
-        Me.Button2 = New System.Windows.Forms.Button()
+        Me.tmrConnected = New System.Windows.Forms.Timer(Me.components)
         Me.SuspendLayout()
         '
         'Button1
@@ -77,21 +77,16 @@ Partial Class MainForm
         Me.chkConnected.Text = "Connected"
         Me.chkConnected.UseVisualStyleBackColor = True
         '
-        'Button2
+        'tmrConnected
         '
-        Me.Button2.Location = New System.Drawing.Point(12, 119)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(75, 23)
-        Me.Button2.TabIndex = 6
-        Me.Button2.Text = "Button2"
-        Me.Button2.UseVisualStyleBackColor = True
+        Me.tmrConnected.Enabled = True
+        Me.tmrConnected.Interval = 1000
         '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(284, 262)
-        Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.chkConnected)
         Me.Controls.Add(Me.comCOM)
         Me.Controls.Add(Me.lblCOM)
@@ -109,6 +104,6 @@ Partial Class MainForm
     Friend WithEvents lblCOM As System.Windows.Forms.Label
     Friend WithEvents comCOM As System.Windows.Forms.ComboBox
     Friend WithEvents chkConnected As System.Windows.Forms.CheckBox
-    Friend WithEvents Button2 As System.Windows.Forms.Button
+    Friend WithEvents tmrConnected As System.Windows.Forms.Timer
 
 End Class
