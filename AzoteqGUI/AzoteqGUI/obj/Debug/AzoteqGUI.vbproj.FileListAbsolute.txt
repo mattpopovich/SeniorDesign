@@ -1,0 +1,10 @@
+P:\CMPEN480\Git\SeniorDesign\AzoteqGUI\AzoteqGUI\bin\Debug\AzoteqGUI.exe.config
+P:\CMPEN480\Git\SeniorDesign\AzoteqGUI\AzoteqGUI\bin\Debug\AzoteqGUI.exe
+P:\CMPEN480\Git\SeniorDesign\AzoteqGUI\AzoteqGUI\bin\Debug\AzoteqGUI.pdb
+P:\CMPEN480\Git\SeniorDesign\AzoteqGUI\AzoteqGUI\bin\Debug\AzoteqGUI.xml
+P:\CMPEN480\Git\SeniorDesign\AzoteqGUI\AzoteqGUI\obj\Debug\AzoteqGUI.MainForm.resources
+P:\CMPEN480\Git\SeniorDesign\AzoteqGUI\AzoteqGUI\obj\Debug\AzoteqGUI.Resources.resources
+P:\CMPEN480\Git\SeniorDesign\AzoteqGUI\AzoteqGUI\obj\Debug\AzoteqGUI.vbproj.GenerateResource.Cache
+P:\CMPEN480\Git\SeniorDesign\AzoteqGUI\AzoteqGUI\obj\Debug\AzoteqGUI.exe
+P:\CMPEN480\Git\SeniorDesign\AzoteqGUI\AzoteqGUI\obj\Debug\AzoteqGUI.xml
+P:\CMPEN480\Git\SeniorDesign\AzoteqGUI\AzoteqGUI\obj\Debug\AzoteqGUI.pdb

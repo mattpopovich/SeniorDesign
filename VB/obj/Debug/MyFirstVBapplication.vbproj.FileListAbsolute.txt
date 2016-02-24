@@ -1,0 +1,11 @@
+C:\Documents and Settings\csc104\Local Settings\Application Data\Temporary Projects\MyFirstVBapplication\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\csc104\Local Settings\Application Data\Temporary Projects\MyFirstVBapplication\obj\Debug\MyFirstVBapplication.ConfigForm.resources
+C:\Documents and Settings\csc104\Local Settings\Application Data\Temporary Projects\MyFirstVBapplication\obj\Debug\MyFirstVBapplication.Resources.resources
+C:\Documents and Settings\csc104\Local Settings\Application Data\Temporary Projects\MyFirstVBapplication\obj\Debug\MyFirstVBapplication.vbproj.GenerateResource.Cache
+C:\Documents and Settings\csc104\Local Settings\Application Data\Temporary Projects\MyFirstVBapplication\bin\Debug\MyFirstVBapplication.exe
+C:\Documents and Settings\csc104\Local Settings\Application Data\Temporary Projects\MyFirstVBapplication\bin\Debug\MyFirstVBapplication.pdb
+C:\Documents and Settings\csc104\Local Settings\Application Data\Temporary Projects\MyFirstVBapplication\bin\Debug\MyFirstVBapplication.xml
+C:\Documents and Settings\csc104\Local Settings\Application Data\Temporary Projects\MyFirstVBapplication\obj\Debug\MyFirstVBapplication.exe
+C:\Documents and Settings\csc104\Local Settings\Application Data\Temporary Projects\MyFirstVBapplication\obj\Debug\MyFirstVBapplication.xml
+C:\Documents and Settings\csc104\Local Settings\Application Data\Temporary Projects\MyFirstVBapplication\obj\Debug\MyFirstVBapplication.pdb
+C:\Documents and Settings\csc104\Local Settings\Application Data\Temporary Projects\MyFirstVBapplication\obj\Debug\MyFirstVBapplication.RaceConfigurationForm.resources
