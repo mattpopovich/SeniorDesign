@@ -10,6 +10,8 @@
 ' But mainly from: http://www.martyncurrey.com/arduino-and-visual-basic-part-1-receiving-data-from-the-arduino/
 
 
+Option Strict On    'Visual Basic won't automatically convert variables
+
 Imports System.IO
 Imports System.IO.Ports
 
@@ -17,39 +19,19 @@ Imports System.IO.Ports
 Public Class MainForm
 
 
-    Dim comPort As String
+    Dim comPort As String = ""
     Dim receivedData As String = ""
+    Dim TIMEOUT As Integer = 1000
 
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' Have the user select which COM port the ardunio is plugged into via pop-up window
-        'MessageBox.Show("Which COM port is the Arduino connected to?", "Input COM Port", MessageBoxButtons.OK, MessageBoxIcon.Question)
-        '       look at this article when i can show list boxes in message boxes: https://msdn.microsoft.com/en-us/library/9wahf8t8.aspx
 
-        Dim returnStr As String = ""
+        For Each _serialPort As String In My.Computer.Ports.SerialPortNames
+            comCOM.Items.Add(_serialPort)
+        Next
 
 
-        Try
-            SerialPort1.Close()
-            SerialPort1.PortName = "COM4" 'change com port to match your Arduino port
-            SerialPort1.BaudRate = 9600
-            SerialPort1.DataBits = 8
-            SerialPort1.Parity = Parity.None
-            SerialPort1.StopBits = StopBits.One
-            SerialPort1.Handshake = Handshake.None
-            SerialPort1.Encoding = System.Text.Encoding.Default 'very important!
-            SerialPort1.ReadTimeout = 1000     'Delay in ms
-
-            SerialPort1.Open()
-            MessageBox.Show("COM Port Configured!", "SUCCESS")
-
-        Catch ex As Exception
-            MessageBox.Show("Error: Serial Port read timed out.", "ERROR")
-
-        End Try
-
-        MessageBox.Show("COM Port Configured!", "SUCCESS")
-
+        
 
     End Sub
 
@@ -63,10 +45,19 @@ Public Class MainForm
         MessageBox.Show(read)
 
 
+        writeData("2")
+
+
+        read = receiveData()
+
+        MessageBox.Show(read)
+
+
     End Sub
 
 
-
+    ' Returns data from the serial port up to the newline character. 
+    '   If no data is put on the serial port for 'TIMEOUT', returns "Error: Serial Port time out."
     Function receiveData() As String
         ' Receive strings from a serial port
         '   With help from: https://msdn.microsoft.com/en-us/library/7ya7y41k.aspx
@@ -76,15 +67,23 @@ Public Class MainForm
         Try
 
             Dim Incoming As String = SerialPort1.ReadLine()
-            If Incoming Is Nothing Then
+            Do
+                If Incoming Is Nothing Then
+                    ' Do nothing and poll for data
+                Else
+                    returnStr &= Incoming & vbCrLf
+                    Exit Do
+                End If
+            Loop
 
-            Else
-                returnStr &= Incoming & vbCrLf
-            End If
+            ' Add code here to append returnStr to Console list box
 
         Catch ex As TimeoutException
-            returnStr = "Error: Could not open serial port."
-
+            returnStr = "Error: Serial Port time out."
+            ' Add code here to append returnStr to Console list box
+        Catch ex As InvalidOperationException
+            returnStr = "Error: Serial Port is closed."
+            ' Add code here to append returnStr to Console list box
         End Try
 
         Return returnStr
@@ -92,26 +91,58 @@ Public Class MainForm
     End Function
 
 
+    ' Writes 'data' to the serial port without appending a newline character
     Sub writeData(ByVal data As String)
 
         'Send strings to a serial port
         '   With help from: https://msdn.microsoft.com/en-us/library/088fx85y.aspx
 
         Try
-            'SerialPort1.Open()
-            SerialPort1.Write(data)
-            'SerialPort1.Close()
-
+            SerialPort1.Write(data)     'Does not append newline character
         Catch ex As Exception
             MessageBox.Show("Error: Could not write to serial port.", "ERROR")
         End Try
 
+        ' Add code here to append data to Console list box
 
     End Sub
 
 
-    Private Sub ListBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ListBox1.SelectedIndexChanged
+    Private Sub txtCOM_TextChanged(sender As Object, e As EventArgs)
 
+    End Sub
+
+    Private Sub comCOM_SelectedIndexChanged(sender As Object, e As EventArgs) Handles comCOM.SelectedIndexChanged
+
+        If (CStr(comCOM.SelectedItem) = "") Then
+            chkConnected.Checked = False
+        Else
+            comPort = CStr(comCOM.SelectedItem)
+
+            Try
+                SerialPort1.Close()
+                SerialPort1.PortName = comPort          'Try user selected port for Arduino
+                SerialPort1.BaudRate = 9600
+                SerialPort1.DataBits = 8
+                SerialPort1.Parity = Parity.None
+                SerialPort1.StopBits = StopBits.One
+                SerialPort1.Handshake = Handshake.None
+                SerialPort1.Encoding = System.Text.Encoding.Default
+                SerialPort1.ReadTimeout = TIMEOUT       'Delay in ms
+
+                SerialPort1.Open()
+                chkConnected.Checked = True
+
+            Catch ex As Exception
+                chkConnected.Checked = False
+                MessageBox.Show("Error: Serial Port read timed out.", "ERROR")
+            End Try
+
+        End If
+    End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+        chkConnected.Checked = Not CBool(chkConnected.CheckState)
     End Sub
 End Class
 
