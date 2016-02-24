@@ -118,13 +118,9 @@ void readArray(byte startingAddress, int length, byte* array){
   Wire.requestFrom(0x74,length,true);// request bytes from IQS
   while (Wire.available()) {
     byte c = Wire.read();      // read byte
-    array[cnt] = cnt;
+    array[cnt] = c;
     cnt++;
   }// while
-  
-  for(int i=0;i<length;i++){
-    array[i] = i;
-  }
 }
 
 void readSamples(int groups, int length, byte* array){
