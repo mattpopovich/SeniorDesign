@@ -1,28 +1,26 @@
-// Wire Master Writer
-// by Nicholas Zambetti <http://www.zambetti.com>
-
-// Demonstrates use of the Wire library
-// Writes data to an I2C/TWI slave device
-// Refer to the "Wire Slave Receiver" example for use with this
-
-// Created 29 March 2006
-
-// This example code is in the public domain.
-
 #include <Wire.h>
 #include "PinChangeInt.h"
-#define IRDY  2
-#define I2CA0 4
-#define MCLR  7
-#define GROUP_CNT      5
-#define BYTES_TO_READ  13
+#define IRDY                2
+#define I2CA0               4
+#define MCLR                7
 
-byte samples[GROUP_CNT][BYTES_TO_READ];
+// These are defines for doing a multi read of the samples
+// GROUP_CNT:
+//   number of groups that are enabled for sampleing
+// GROUP_SAMPLE_LEN:
+//   number of bytes to read starting from address 0x3D (group#)
+//   17 = 1 group# + 8 samples + 8 LTA
+//   9  = 1 group# + 8 samples
+#define GROUP_CNT           5
+#define GROUP_SAMPLE_LEN    17
+
+// array to hold sample data
+byte samples[GROUP_CNT*GROUP_SAMPLE_LEN];
 
 int interrupted = 0;
 
 void enableISR(){
-  digitalWrite(IRDY, HIGH); //use the internal pullup resistor
+  digitalWrite(IRDY, HIGH);//use internal pullups
   // attach a PinChange Interrupt
   PCintPort::attachInterrupt(IRDY, isr, RISING);
 }
@@ -34,7 +32,7 @@ void disableISR(){
 
 void setup(){
   pinMode(IRDY, INPUT);     //set the pin to input
-  digitalWrite(IRDY, HIGH); //use the internal pullup resistor
+  digitalWrite(IRDY, HIGH); //use internal pullups
   
   pinMode(I2CA0,OUTPUT);
   pinMode(MCLR,OUTPUT);
@@ -45,7 +43,7 @@ void setup(){
   
   Serial.begin(9600);// initialize UART
   Serial.println("UART is running!");
-  Wire.begin(); // join i2c bus (address optional for master)
+  Wire.begin();
   Serial.println(readRegister(0x00));
   writeRegister(0xd0,0x0f);
 //  writeRegister(0xd2,0x05);// chan_active_0 ch0-ch3
@@ -62,19 +60,19 @@ void loop(){
 //    interrupted = 0;
 //  }// if
   
-  multiReadArray(0x3d,GROUP_CNT,BYTES_TO_READ,(byte**)samples);
+  readSamples(GROUP_CNT,GROUP_SAMPLE_LEN,samples);
   
   Serial.println("NEW SAMPLE!");
-  for(int i=0;i<BYTES_TO_READ;i++){
-    Serial.print(samples[0][i]);
+  for(int i=0;i<GROUP_SAMPLE_LEN;i++){
+    Serial.print(samples[0*GROUP_SAMPLE_LEN+i]);
     Serial.print('\t');
-    Serial.print(samples[1][i]);
+    Serial.print(samples[1*GROUP_SAMPLE_LEN+i]);
     Serial.print('\t');
-    Serial.print(samples[2][i]);
+    Serial.print(samples[2*GROUP_SAMPLE_LEN+i]);
     Serial.print('\t');
-    Serial.print(samples[3][i]);
+    Serial.print(samples[3*GROUP_SAMPLE_LEN+i]);
     Serial.print('\t');
-    Serial.println(samples[4][i]);
+    Serial.println(samples[4*GROUP_SAMPLE_LEN+i]);
   }// for
 }
 
@@ -108,24 +106,28 @@ byte readRegister(byte registerAddress){
   return c;
 }
 
-void multiReadArray(byte startingAddress, int groups, int length, byte** array){
-  for(int g=0; g<groups; g++){
-    for(byte cnt=0;cnt<length;cnt++){
-      array[g][cnt] = cnt;
-    }
+void readArray(byte startingAddress, int length, byte* array){
+  int cnt = 0;
     
-//    int cnt = 0;
-//    while(digitalRead(IRDY)==0){};// wait for IQS to be ready
-//    
-//    Wire.beginTransmission(0x74);   // transmit to device #4
-//    Wire.write(startingAddress);    // request device info
-//    Wire.endTransmission(false);    // send restart transmitting
-//    
-//    Wire.requestFrom(0x74,length,true);
-//    while (Wire.available()) {      // slave may send less than requested
-//      byte c = Wire.read();          // receive a byte as character
-//      array[g][cnt] = c;
-//      cnt++;
-//    }// while
+  while(digitalRead(IRDY)==0){};// wait for IQS to be ready
+  
+  Wire.beginTransmission(0x74);// send START and CONTROL byte
+  Wire.write(startingAddress); // send starting address
+  Wire.endTransmission(false); // send RESTART
+  
+  Wire.requestFrom(0x74,length,true);// request bytes from IQS
+  while (Wire.available()) {
+    byte c = Wire.read();      // read byte
+    array[cnt] = cnt;
+    cnt++;
+  }// while
+  
+  for(int i=0;i<length;i++){
+    array[i] = i;
   }
+}
+
+void readSamples(int groups, int length, byte* array){
+  for(int g=0; g<groups; g++)
+    readArray(0x3d,length, &array[g*length]);
 }
