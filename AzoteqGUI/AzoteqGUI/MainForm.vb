@@ -32,25 +32,7 @@ Public Class MainForm
 
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
-        writeData("1")
-
-
-        Dim read As String = receiveData()
-
-        MessageBox.Show(read)
-
-
-        writeData("2")
-
-
-        read = receiveData()
-
-        MessageBox.Show(read)
-
-
-    End Sub
 
 
     ' Returns data from the serial port up to the newline character. 
@@ -96,7 +78,7 @@ Public Class MainForm
         Try
             SerialPort1.Write(data)     'Does not append newline character
         Catch ex As Exception
-            MessageBox.Show("Error: Could not write to serial port.", "ERROR")
+            MessageBox.Show("Could not write to serial port.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
         ' Add data to console
@@ -125,10 +107,12 @@ Public Class MainForm
 
                 SerialPort1.Open()
                 chkConnected.Checked = True
+                writeConsole("Connected via " + comPort)
 
             Catch ex As Exception
                 chkConnected.Checked = False
-                MessageBox.Show("Error: Serial Port read timed out.", "ERROR")
+                writeConsole("Connection via " + comPort + " has failed: timeout.")
+                MessageBox.Show("Serial Port read timed out.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
 
         End If
@@ -138,23 +122,48 @@ Public Class MainForm
     Private Sub tmrConnected_Tick(sender As Object, e As EventArgs) Handles tmrConnected.Tick
 
         ' Check SerialPort connection every second
+        If ((SerialPort1.IsOpen = False) And (CBool(chkConnected.CheckState) = True)) Then
+            writeConsole("ERROR: Connection on " + comPort + " has been lost.")
+        End If
         chkConnected.Checked = SerialPort1.IsOpen
 
     End Sub
 
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
         'Test functions/interacting with other controls
-        writeConsole("Hello")
-        writeConsole("hola")
-        writeConsole("chaio")
+        writeConsole(CStr(Keys.Enter))
+        writeConsole(CStr(Keys.Return))
     End Sub
 
     ' Write to console and automatically scroll
     Sub writeConsole(ByVal data As String)
         lstConsole.Items.Add(data)
         lstConsole.TopIndex = lstConsole.Items.Count - 1 - CInt(lstConsole.ItemHeight / 2)
+
+        ' TODO: Write all data received via serial port to console (think interrupt)
+        '       (not just stuff I want to read and write)
     End Sub
 
+    ' When the user clicks on the 'Write' button
+    Private Sub btnWrite_Click(sender As Object, e As EventArgs) Handles btnWrite.Click
+        If (CStr(comCOM.SelectedItem) = "") Then
+            MessageBox.Show("Please select a COM Port first", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Else
+            writeData(txtWrite.Text)
+            txtWrite.Text = ""
+            receiveData()
+        End If
+
+        'TODO: Add disconnect button for COM
+    End Sub
+
+    ' When the user presses enter in the 'Write' text box
+    Private Sub txtWrite_KeyDown(sender As Object, e As KeyEventArgs) Handles txtWrite.KeyDown
+        ' Make sure user pressed the enter key and not any key
+        If (e.KeyCode = Keys.Enter) Then
+            btnWrite.PerformClick()
+        End If
+    End Sub
 End Class
 
 

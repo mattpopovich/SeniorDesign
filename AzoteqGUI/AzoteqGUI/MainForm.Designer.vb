@@ -23,7 +23,6 @@ Partial Class MainForm
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Me.Button1 = New System.Windows.Forms.Button()
         Me.lstConsole = New System.Windows.Forms.ListBox()
         Me.SerialPort1 = New System.IO.Ports.SerialPort(Me.components)
         Me.lblCOM = New System.Windows.Forms.Label()
@@ -31,16 +30,9 @@ Partial Class MainForm
         Me.chkConnected = New System.Windows.Forms.CheckBox()
         Me.tmrConnected = New System.Windows.Forms.Timer(Me.components)
         Me.btnTest = New System.Windows.Forms.Button()
+        Me.txtWrite = New System.Windows.Forms.TextBox()
+        Me.btnWrite = New System.Windows.Forms.Button()
         Me.SuspendLayout()
-        '
-        'Button1
-        '
-        Me.Button1.Location = New System.Drawing.Point(446, 200)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(75, 23)
-        Me.Button1.TabIndex = 0
-        Me.Button1.Text = "Read"
-        Me.Button1.UseVisualStyleBackColor = True
         '
         'lstConsole
         '
@@ -49,15 +41,15 @@ Partial Class MainForm
         Me.lstConsole.ForeColor = System.Drawing.SystemColors.Window
         Me.lstConsole.FormattingEnabled = True
         Me.lstConsole.HorizontalScrollbar = True
-        Me.lstConsole.Location = New System.Drawing.Point(12, 172)
+        Me.lstConsole.Location = New System.Drawing.Point(12, 63)
         Me.lstConsole.Name = "lstConsole"
-        Me.lstConsole.Size = New System.Drawing.Size(269, 160)
+        Me.lstConsole.Size = New System.Drawing.Size(269, 238)
         Me.lstConsole.TabIndex = 1
         '
         'lblCOM
         '
         Me.lblCOM.AutoSize = True
-        Me.lblCOM.Location = New System.Drawing.Point(13, 13)
+        Me.lblCOM.Location = New System.Drawing.Point(55, 9)
         Me.lblCOM.Name = "lblCOM"
         Me.lblCOM.Size = New System.Drawing.Size(34, 13)
         Me.lblCOM.TabIndex = 2
@@ -66,7 +58,7 @@ Partial Class MainForm
         'comCOM
         '
         Me.comCOM.FormattingEnabled = True
-        Me.comCOM.Location = New System.Drawing.Point(53, 10)
+        Me.comCOM.Location = New System.Drawing.Point(95, 6)
         Me.comCOM.Name = "comCOM"
         Me.comCOM.Size = New System.Drawing.Size(66, 21)
         Me.comCOM.TabIndex = 3
@@ -75,7 +67,7 @@ Partial Class MainForm
         '
         Me.chkConnected.AutoCheck = False
         Me.chkConnected.AutoSize = True
-        Me.chkConnected.Location = New System.Drawing.Point(125, 12)
+        Me.chkConnected.Location = New System.Drawing.Point(167, 8)
         Me.chkConnected.Name = "chkConnected"
         Me.chkConnected.Size = New System.Drawing.Size(78, 17)
         Me.chkConnected.TabIndex = 5
@@ -89,31 +81,47 @@ Partial Class MainForm
         '
         'btnTest
         '
-        Me.btnTest.Location = New System.Drawing.Point(281, 149)
+        Me.btnTest.Location = New System.Drawing.Point(119, 309)
         Me.btnTest.Name = "btnTest"
         Me.btnTest.Size = New System.Drawing.Size(75, 23)
         Me.btnTest.TabIndex = 6
         Me.btnTest.Text = "Test"
         Me.btnTest.UseVisualStyleBackColor = True
         '
+        'txtWrite
+        '
+        Me.txtWrite.Location = New System.Drawing.Point(12, 37)
+        Me.txtWrite.Name = "txtWrite"
+        Me.txtWrite.Size = New System.Drawing.Size(188, 20)
+        Me.txtWrite.TabIndex = 7
+        '
+        'btnWrite
+        '
+        Me.btnWrite.Location = New System.Drawing.Point(206, 34)
+        Me.btnWrite.Name = "btnWrite"
+        Me.btnWrite.Size = New System.Drawing.Size(75, 23)
+        Me.btnWrite.TabIndex = 9
+        Me.btnWrite.Text = "Serial Write"
+        Me.btnWrite.UseVisualStyleBackColor = True
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(668, 344)
+        Me.ClientSize = New System.Drawing.Size(295, 344)
+        Me.Controls.Add(Me.btnWrite)
+        Me.Controls.Add(Me.txtWrite)
         Me.Controls.Add(Me.btnTest)
         Me.Controls.Add(Me.chkConnected)
         Me.Controls.Add(Me.comCOM)
         Me.Controls.Add(Me.lblCOM)
         Me.Controls.Add(Me.lstConsole)
-        Me.Controls.Add(Me.Button1)
         Me.Name = "MainForm"
         Me.Text = "Azoteq IQS 316 GUI"
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents Button1 As System.Windows.Forms.Button
     Friend WithEvents lstConsole As System.Windows.Forms.ListBox
     Friend WithEvents SerialPort1 As System.IO.Ports.SerialPort
     Friend WithEvents lblCOM As System.Windows.Forms.Label
@@ -121,5 +129,7 @@ Partial Class MainForm
     Friend WithEvents chkConnected As System.Windows.Forms.CheckBox
     Friend WithEvents tmrConnected As System.Windows.Forms.Timer
     Friend WithEvents btnTest As System.Windows.Forms.Button
+    Friend WithEvents txtWrite As System.Windows.Forms.TextBox
+    Friend WithEvents btnWrite As System.Windows.Forms.Button
 
 End Class
