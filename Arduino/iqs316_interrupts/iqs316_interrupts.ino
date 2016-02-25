@@ -11,8 +11,11 @@
 //   number of bytes to read starting from address 0x3D (group#)
 //   17 = 1 group# + 8 samples + 8 LTA
 //   9  = 1 group# + 8 samples
-#define GROUP_CNT           5
+#define GROUP_CNT           4
 #define GROUP_SAMPLE_LEN    17
+#define SAMPLE_DATA_LEN     8   // sample data occupies 8 bytes
+#define LTA_DATA_LEN        8   // LTA data occupies 8 bytes
+//#define GUI_PRINT            // toggle GUI and DEBUG printing
 
 // array to hold sample data
 byte samples[GROUP_CNT*GROUP_SAMPLE_LEN];
@@ -20,7 +23,6 @@ byte samples[GROUP_CNT*GROUP_SAMPLE_LEN];
 int interrupted = 0;
 
 void enableISR(){
-  digitalWrite(IRDY, HIGH);//use internal pullups
   // attach a PinChange Interrupt
   PCintPort::attachInterrupt(IRDY, isr, RISING);
 }
@@ -43,8 +45,12 @@ void setup(){
   
   Serial.begin(9600);// initialize UART
   Serial.println("UART is running!");
+  Serial.print("Waiting for IQS... ");
   Wire.begin();
-  Serial.println(readRegister(0x00));
+  while(readRegister(0x00)!=27)
+    delay(10);
+  Serial.println("OK");
+  
   writeRegister(0xd0,0x0f);
 //  writeRegister(0xd2,0x05);// chan_active_0 ch0-ch3
 //  writeRegister(0xd3,0x01);// chan_active_1 ch4-ch7
@@ -55,25 +61,87 @@ void setup(){
 }
 
 void loop(){
-//  if(interrupted){
-//    Serial.println(readRegister(0x00));
-//    interrupted = 0;
-//  }// if
-  
   readSamples(GROUP_CNT,GROUP_SAMPLE_LEN,samples);
-  
-  Serial.println("NEW SAMPLE!");
-  for(int i=0;i<GROUP_SAMPLE_LEN;i++){
-    Serial.print(samples[0*GROUP_SAMPLE_LEN+i]);
-    Serial.print('\t');
-    Serial.print(samples[1*GROUP_SAMPLE_LEN+i]);
-    Serial.print('\t');
-    Serial.print(samples[2*GROUP_SAMPLE_LEN+i]);
-    Serial.print('\t');
-    Serial.print(samples[3*GROUP_SAMPLE_LEN+i]);
-    Serial.print('\t');
-    Serial.println(samples[4*GROUP_SAMPLE_LEN+i]);
+
+  if(Serial.available()>0){
+    #ifndef GUI_PRINT
+    Serial.println("");
+    #endif
+    switch(Serial.read()){
+      case 's':
+        sendSamples(Serial.read()-48);
+        break;
+      case 'l':
+        sendLTA(Serial.read()-48);
+        break;
+      default:
+        break;
+    }// switch
+  }
+}
+
+void sendSamples(byte group){
+  byte* ptr = getGroupPtr(group);
+
+  if(ptr){
+    for(byte i=0;i<SAMPLE_DATA_LEN+1;i++){
+      #ifdef GUI_PRINT
+      Serial.write(ptr[i]);// for GUI tool
+      #else
+      Serial.println(ptr[i]);// for pretty debugging
+      #endif
+    }// for
+  } else {
+    #ifdef GUI_PRINT
+    Serial.write(0xff);// -1 for group to tell GUI error occured
+    #else
+    Serial.println("SAMPLE DOESN'T EXIST!");
+    #endif
+  }// if
+}
+
+void sendLTA(byte group){
+  byte* ptr = getGroupPtr(group);
+
+  if(ptr){
+    // send group #
+    #ifdef GUI_PRINT
+    Serial.write(ptr[0]);// for GUI tool
+    #else
+    Serial.println(ptr[0]);// for pretty debugging
+    #endif
+    ptr += 1+SAMPLE_DATA_LEN;// move to beginning of LTA data
+    for(byte i=0;i<LTA_DATA_LEN;i++){
+      #ifdef GUI_PRINT
+      Serial.write(ptr[i]);// for GUI tool
+      #else
+      Serial.println(ptr[i]);// for pretty debugging
+      #endif
+    }// for
+  } else {
+    #ifdef GUI_PRINT
+    Serial.write(0xff);// -1 for group to tell GUI error occured
+    #else
+    Serial.println("SAMPLE DOESN'T EXIST!");
+    #endif
+  }// if
+}
+
+// Searches the 'samples' array for 'group' data
+//  returns pointer to that group's data set (group#,samples,LTA)
+//  if group exists in the array
+//  returns a null pointer if the data doesn't exist
+byte* getGroupPtr(byte group){
+  byte* result = NULL;
+
+  // search sample array for the beginning of group data
+  for(byte i=0;i<GROUP_CNT;i++){
+    if(samples[i*GROUP_SAMPLE_LEN]==group){
+      result = &samples[i*GROUP_SAMPLE_LEN];
+    }// if
   }// for
+
+  return result;
 }
 
 void isr(){ // handle pin change interrupt for D0 to D7 here
