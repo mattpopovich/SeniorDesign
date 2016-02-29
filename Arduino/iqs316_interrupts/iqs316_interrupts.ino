@@ -17,8 +17,8 @@
 #define LTA_DATA_LEN        8   // LTA data occupies 8 bytes
 //#define GUI_PRINT            // toggle GUI and DEBUG printing
 
-// array to hold sample data
-byte samples[GROUP_CNT*GROUP_SAMPLE_LEN];
+byte samples[GROUP_CNT*GROUP_SAMPLE_LEN];// array for sample data
+byte arg[4];// for holding menu arguments
 
 void enableISR(){
   // attach a PinChange Interrupt
@@ -42,12 +42,13 @@ void setup(){
   resetIQS();
   
   Serial.begin(9600);// initialize UART
-  Serial.println("UART is running!");
-  Serial.print("Waiting for IQS... ");
+  Serial.setTimeout(20);// set timeout to 20 milli seconds
+  Serial.println(F("UART is running!"));
+  Serial.print(F("Waiting for IQS... "));
   Wire.begin();
   while(readRegister(0x00)!=27)
     delay(10);
-  Serial.println("OK");
+  Serial.println(F("OK"));
   
   writeRegister(0xd0,0x0f);
 //  writeRegister(0xd2,0x05);// chan_active_0 ch0-ch3
@@ -62,29 +63,78 @@ void setup(){
 
 void loop(){
   readSamples(GROUP_CNT,GROUP_SAMPLE_LEN,samples);
+}
+
+void serialEvent(){
+//  disableISR();
+  /* ENTER CRITICAL SECTION */
+  #ifndef GUI_PRINT
+  Serial.println("");
+  #endif
+  switch(Serial.read()){
+    case 's':
+      sendSamples(Serial.read()-48);
+      break;
+    case 'l':
+      sendLTA(Serial.read()-48);
+      break;
+    case 'w':
+      arg[0] = atoi();// get address byte
+      arg[1] = atoi();// get data byte
+//      Serial.print("Writing 0x");
+//      Serial.print(arg[1],HEX);
+//      Serial.print(" to address 0x");
+//      Serial.println(arg[0],HEX);
+      writeRegister(arg[0],arg[1]);
+      break;
+    case 'r':
+      arg[0] = atoi();// get address byte
+      #ifdef GUI_PRINT
+      Serial.write(readRegister(arg[0]));
+      #else
+      Serial.println(readRegister(arg[0]),HEX);
+      #endif
+      break;
+    case 'R':
+      resetIQS();
+      break;
+    case '?':
+      Serial.println(F("s#:    get group #'s sample data"));
+      Serial.println(F("l#:    get group #'s LTA data"));
+      Serial.println(F("w##$$: write 0x$$ to address 0x##"));
+      Serial.println(F("r##:   read address 0x##"));
+      Serial.println(F("R:     reset IQS"));
+      Serial.println(F("?:     help"));
+      break;
+    default:
+      break;
+  }// switch
+  /* EXIT CRITICAL SECTION */
+//  enableISR();
+}
+
+// Reads a byte from UART, and interprets as a HEX digit
+byte atoi(){
+  byte c[2];
+  Serial.readBytes(c,2);
   
-  if(Serial.available()>0){
-//    disableISR();
-    /* ENTER CRITICAL SECTION */
-    #ifndef GUI_PRINT
-    Serial.println("");
-    #endif
-    switch(Serial.read()){
-      case 's':
-        sendSamples(Serial.read()-48);
-        break;
-      case 'l':
-        sendLTA(Serial.read()-48);
-        break;
-      case 'R':
-        resetIQS();
-        break;
-      default:
-        break;
-    }// switch
-    /* EXIT CRITICAL SECTION */
-//    enableISR();
-  }
+  c[0] = hexCharToInt(c[0])<<4;
+  c[0] |= hexCharToInt(c[1]);
+
+  return c[0];
+}
+
+byte hexCharToInt(char c){
+  if(c>=48&&c<=57)
+    c -= 48;
+  else if(c>=65&&c<=70)
+    c -= 55;
+  else if(c>=97&&c<=102)
+    c -= 87;
+  else
+    c = 0xff;
+
+  return c;
 }
 
 void resetIQS(){
@@ -115,7 +165,7 @@ void sendSamples(byte group){
     #ifdef GUI_PRINT
     Serial.write(0xff);// -1 for group to tell GUI error occured
     #else
-    Serial.println("SAMPLE DOESN'T EXIST!");
+    Serial.println(F("SAMPLE DOESN'T EXIST!"));
     #endif
   }// if
 }
@@ -142,7 +192,7 @@ void sendLTA(byte group){
     #ifdef GUI_PRINT
     Serial.write(0xff);// -1 for group to tell GUI error occured
     #else
-    Serial.println("SAMPLE DOESN'T EXIST!");
+    Serial.println(F("SAMPLE DOESN'T EXIST!"));
     #endif
   }// if
 }
