@@ -20,11 +20,9 @@
 // array to hold sample data
 byte samples[GROUP_CNT*GROUP_SAMPLE_LEN];
 
-int interrupted = 0;
-
 void enableISR(){
   // attach a PinChange Interrupt
-  PCintPort::attachInterrupt(IRDY, isr, RISING);
+  PCintPort::attachInterrupt(IRDY, isr, HIGH);
 }
 
 void disableISR(){
@@ -35,13 +33,13 @@ void disableISR(){
 void setup(){
   pinMode(IRDY, INPUT);     //set the pin to input
   digitalWrite(IRDY, HIGH); //use internal pullups
-  
+
+  pinMode(6, OUTPUT);
   pinMode(I2CA0,OUTPUT);
   pinMode(MCLR,OUTPUT);
   digitalWrite(I2CA0,0);
-  digitalWrite(MCLR,0);
-  delay(10);
   digitalWrite(MCLR,1);
+  resetIQS();
   
   Serial.begin(9600);// initialize UART
   Serial.println("UART is running!");
@@ -58,12 +56,16 @@ void setup(){
 //  writeRegister(0xd5,0x00);// chan_active_3 ch12-ch15
 //  writeRegister(0xd6,0x04);// chan_active_4 ch16-ch19
   writeRegister(0xc4,0x26);// force PROX mode
+
+//  enableISR();
 }
 
 void loop(){
   readSamples(GROUP_CNT,GROUP_SAMPLE_LEN,samples);
-
+  
   if(Serial.available()>0){
+//    disableISR();
+    /* ENTER CRITICAL SECTION */
     #ifndef GUI_PRINT
     Serial.println("");
     #endif
@@ -74,17 +76,35 @@ void loop(){
       case 'l':
         sendLTA(Serial.read()-48);
         break;
+      case 'R':
+        resetIQS();
+        break;
       default:
         break;
     }// switch
+    /* EXIT CRITICAL SECTION */
+//    enableISR();
   }
+}
+
+void resetIQS(){
+  digitalWrite(MCLR,0);
+  delay(10);
+  digitalWrite(MCLR,1);
 }
 
 void sendSamples(byte group){
   byte* ptr = getGroupPtr(group);
 
   if(ptr){
-    for(byte i=0;i<SAMPLE_DATA_LEN+1;i++){
+    // send group #
+    #ifdef GUI_PRINT
+    Serial.write(ptr[0]);// for GUI tool
+    #else
+    Serial.println(ptr[0]);// for pretty debugging
+    #endif
+    ptr += 1;// move to beginning of LTA data
+    for(byte i=0;i<SAMPLE_DATA_LEN;i++){
       #ifdef GUI_PRINT
       Serial.write(ptr[i]);// for GUI tool
       #else
@@ -145,7 +165,10 @@ byte* getGroupPtr(byte group){
 }
 
 void isr(){ // handle pin change interrupt for D0 to D7 here
-  interrupted = 1;
+  disableISR();
+  Serial.print('i');
+  readSamples(GROUP_CNT,GROUP_SAMPLE_LEN,samples);
+  enableISR();
 }
 
 void writeRegister(byte registerAddress, byte data){
@@ -176,8 +199,10 @@ byte readRegister(byte registerAddress){
 
 void readArray(byte startingAddress, int length, byte* array){
   int cnt = 0;
-    
+
+  digitalWrite(6,HIGH);
   while(digitalRead(IRDY)==0){};// wait for IQS to be ready
+  digitalWrite(6,LOW);
   
   Wire.beginTransmission(0x74);// send START and CONTROL byte
   Wire.write(startingAddress); // send starting address
