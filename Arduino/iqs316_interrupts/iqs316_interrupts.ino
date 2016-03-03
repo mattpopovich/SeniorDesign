@@ -19,10 +19,11 @@
 
 byte samples[GROUP_CNT*GROUP_SAMPLE_LEN];// array for sample data
 byte arg[4];// for holding menu arguments
+volatile int interrupted = 0;
 
 void enableISR(){
   // attach a PinChange Interrupt
-  PCintPort::attachInterrupt(IRDY, isr, HIGH);
+  PCintPort::attachInterrupt(IRDY, isr, FALLING);
 }
 
 void disableISR(){
@@ -58,15 +59,20 @@ void setup(){
 //  writeRegister(0xd6,0x04);// chan_active_4 ch16-ch19
   writeRegister(0xc4,0x26);// force PROX mode
 
-//  enableISR();
+  enableISR();
 }
 
 void loop(){
-  readSamples(GROUP_CNT,GROUP_SAMPLE_LEN,samples);
+  if(interrupted)
+    readSamples(GROUP_CNT,GROUP_SAMPLE_LEN,samples);
+}
+
+void isr(){ // handle pin change interrupt for D0 to D7 here
+  interrupted = 1;
 }
 
 void serialEvent(){
-//  disableISR();
+  disableISR();
   /* ENTER CRITICAL SECTION */
   #ifndef GUI_PRINT
   Serial.println("");
@@ -110,7 +116,7 @@ void serialEvent(){
       break;
   }// switch
   /* EXIT CRITICAL SECTION */
-//  enableISR();
+  enableISR();
 }
 
 // Reads a byte from UART, and interprets as a HEX digit
@@ -214,15 +220,8 @@ byte* getGroupPtr(byte group){
   return result;
 }
 
-void isr(){ // handle pin change interrupt for D0 to D7 here
-  disableISR();
-  Serial.print('i');
-  readSamples(GROUP_CNT,GROUP_SAMPLE_LEN,samples);
-  enableISR();
-}
-
 void writeRegister(byte registerAddress, byte data){
-  while(digitalRead(IRDY)==0){};// wait for IQS to be ready
+  while(digitalRead(IRDY)==1){};// wait for IQS to be ready
   
   Wire.beginTransmission(0x74);
   Wire.write(registerAddress);
@@ -233,7 +232,7 @@ void writeRegister(byte registerAddress, byte data){
 
 byte readRegister(byte registerAddress){
   byte c;
-  while(digitalRead(IRDY)==0){};// wait for IQS to be ready
+  while(digitalRead(IRDY)==1){};// wait for IQS to be ready
   
   Wire.beginTransmission(0x74);   // transmit to device #4
   Wire.write(registerAddress);    // request device info
@@ -250,9 +249,7 @@ byte readRegister(byte registerAddress){
 void readArray(byte startingAddress, int length, byte* array){
   int cnt = 0;
 
-  digitalWrite(6,HIGH);
-  while(digitalRead(IRDY)==0){};// wait for IQS to be ready
-  digitalWrite(6,LOW);
+  while(digitalRead(IRDY)==1){};// wait for IQS to be ready
   
   Wire.beginTransmission(0x74);// send START and CONTROL byte
   Wire.write(startingAddress); // send starting address
@@ -267,6 +264,9 @@ void readArray(byte startingAddress, int length, byte* array){
 }
 
 void readSamples(int groups, int length, byte* array){
+  disableISR();
   for(int g=0; g<groups; g++)
     readArray(0x3d,length, &array[g*length]);
+  interrupted = 0;
+  enableISR();
 }
