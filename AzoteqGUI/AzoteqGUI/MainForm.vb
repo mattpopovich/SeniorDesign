@@ -164,6 +164,21 @@ Public Class MainForm
             btnWrite.PerformClick()
         End If
     End Sub
+
+    Public Class Sensors
+        Enum one
+            x = 390
+            y = 50
+        End Enum
+
+    End Class
+
+
+    Private Sub MainForm_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
+        
+        ' Fill the circle with the same color as its border.
+        e.Graphics.FillEllipse(Brushes.Black, Sensors.one.x, Sensors.one.y, 20, 20)
+    End Sub
 End Class
 
 
