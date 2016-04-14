@@ -63,8 +63,7 @@ void setup(){
 }
 
 void loop(){
-  if(interrupted)
-    readSamples(GROUP_CNT,GROUP_SAMPLE_LEN,samples);
+  readSamples(GROUP_CNT,GROUP_SAMPLE_LEN,samples);
 }
 
 void isr(){ // handle pin change interrupt for D0 to D7 here
@@ -83,6 +82,12 @@ void serialEvent(){
       break;
     case 'l':
       sendLTA(Serial.read()-48);
+      break;
+    case 'p':
+      prettyPrintChannels();
+      break;
+    case 't':
+      autoATI((Serial.read()-48)*1000);
       break;
     case 'w':
       arg[0] = atoi();// get address byte
@@ -105,8 +110,18 @@ void serialEvent(){
       resetIQS();
       break;
     case '?':
+      Serial.println(F("IQS MODE: TOUCH"));
+      Serial.println(F("Channels Enabled:"));
+      Serial.println(F("  Group 0:"));
+      Serial.println(F("  Group 1:4,5,6,7"));
+      Serial.println(F("  Group 2:8,9,10,11"));
+      Serial.println(F("  Group 3:12,13,14,15"));
+      Serial.println(F("  Group 4:16,17,18,19"));
+      Serial.println(F("MENU OPTIONS:"));
       Serial.println(F("s#:    get group #'s sample data"));
       Serial.println(F("l#:    get group #'s LTA data"));
+      Serial.println(F("p:     pretty print channels"));
+      Serial.println(F("t#:    tune channel counts to #*1000"));
       Serial.println(F("w##$$: write 0x$$ to address 0x##"));
       Serial.println(F("r##:   read address 0x##"));
       Serial.println(F("R:     reset IQS"));
@@ -122,7 +137,7 @@ void serialEvent(){
 // Reads a byte from UART, and interprets as a HEX digit
 byte atoi(){
   byte c[2];
-  Serial.readBytes(c,2);
+  Serial.readBytes((char*)c,2);
   
   c[0] = hexCharToInt(c[0])<<4;
   c[0] |= hexCharToInt(c[1]);
@@ -203,6 +218,17 @@ void sendLTA(byte group){
   }// if
 }
 
+void prettyPrintChannels(){
+  Serial.println("Ch#\tValue\tLTA");
+  for(int ch=4;ch<20;ch++){
+    Serial.print(ch);
+    Serial.print('\t');
+    Serial.print(getChannel(ch));
+    Serial.print('\t');
+    Serial.println(getLTA(ch));
+  }// for
+}
+
 // Searches the 'samples' array for 'group' data
 //  returns pointer to that group's data set (group#,samples,LTA)
 //  if group exists in the array
@@ -218,6 +244,67 @@ byte* getGroupPtr(byte group){
   }// for
 
   return result;
+}
+
+int getChannel(byte channel){
+  int result;
+  byte* ptr;
+  
+  if(channel<4||channel>19){
+    result = -1;
+  } else {
+    ptr = getGroupPtr(channel/4);// get sample array for channel
+    if(ptr==NULL){
+      result = -2;
+    } else {
+      result = ptr[((channel%4)*2)+1]<<8;
+      result |= ptr[((channel%4)*2)+2];
+    }// if
+  }// if
+
+  return result;
+}
+
+int getLTA(byte channel){
+  int result;
+  byte* ptr;
+  
+  if(channel<4||channel>19){
+    result = -1;
+  } else {
+    ptr = getGroupPtr(channel/4);// get sample array for channel
+    if(ptr==NULL){
+      result = -2;
+    } else {
+      result = ptr[((channel%4)*2)+1+8]<<8;
+      result |= ptr[((channel%4)*2)+2+8];
+    }// if
+  }// if
+
+  return result;
+}
+
+void autoATI(short target){
+  byte temp;
+  writeRegister(0xdd,(byte)target&0xff); // set ATI target low
+  target >>= 8;
+  writeRegister(0xdc,(byte)target&0xff); // set ATI target hi
+  temp = readRegister(0xc4);
+  writeRegister(0xc4,temp|=(1<<6));      // set ATI to touch mode
+  temp = readRegister(0xc6);
+  writeRegister(0xc6,temp|=(1<<3));      // start auto ATI process
+
+  while(atiBusy()){}// wait for it to finish
+
+  #ifdef GUI_PRINT
+  Serial.write(0x1);
+  #else
+  Serial.println(F("tuned! :D"));
+  #endif
+}
+
+boolean atiBusy(){
+  return (readRegister(0x10)&0x4!=0?true:false);
 }
 
 void writeRegister(byte registerAddress, byte data){
