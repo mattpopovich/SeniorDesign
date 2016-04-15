@@ -20,56 +20,26 @@ Imports System.IO.Ports
 
 Public Class MainForm
 
-
+    ' Global Variables
     Dim comPort As String = ""
     Dim receivedData As String = ""
     Dim TIMEOUT As Integer = 1000
+    Dim scrolling As Boolean = True
+    Dim printing As Boolean = True
 
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        ' Populate COMs combo box
         For Each _serialPort As String In My.Computer.Ports.SerialPortNames
             comCOM.Items.Add(_serialPort)
         Next
 
+        ' Set checkboxes
+        chkScrolling.Checked = scrolling
+        chkPrinting.Checked = printing
+
     End Sub
-
-
-
-
-    ' Returns data from the serial port up to the newline character. 
-    '   If no data is put on the serial port for 'TIMEOUT', returns "Error: Serial Port time out."
-    Function receiveData() As String
-        ' Receive strings from a serial port
-        '   With help from: https://msdn.microsoft.com/en-us/library/7ya7y41k.aspx
-
-        Dim returnStr As String = ""
-
-        Try
-
-            Dim Incoming As String = SerialPort1.ReadLine()
-            Do
-                If Incoming Is Nothing Then
-                    ' Do nothing and poll for data
-                Else
-                    returnStr &= Incoming & vbCrLf
-                    Exit Do
-                End If
-            Loop
-
-        Catch ex As TimeoutException
-            returnStr = "Error: Serial Port time out."
-        Catch ex As InvalidOperationException
-            returnStr = "Error: Serial Port is closed."
-        End Try
-
-        ' Add returnStr to console
-        writeConsoleNewline(returnStr)
-
-        Return returnStr
-
-    End Function
-
 
     ' Writes 'data' to the serial port without appending a newline character
     Sub writeData(ByVal data As String)
@@ -85,6 +55,7 @@ Public Class MainForm
 
         ' Add data to console
         writeConsoleNewline(data)
+        writeConsoleNewline("")
 
     End Sub
 
@@ -133,8 +104,9 @@ Public Class MainForm
             chkConnected.Checked = SerialPort1.IsOpen
         End If
 
-        If (CBool(chkConnected.CheckState) = True) Then
-            ' COM Port is connected, let's see if it has any data
+        If (chkConnected.Checked And chkPrinting.Checked) Then
+            ' COM Port is connected and user wants it printed to console
+            '   Let's see if it has any newdata
 
             Try
 
@@ -158,9 +130,6 @@ Public Class MainForm
             End Try
 
         End If
-        
-
-
 
     End Sub
 
@@ -170,10 +139,17 @@ Public Class MainForm
         writeConsoleNewline(CStr(Keys.Return))
     End Sub
 
+    ' Automatically scroll the list box
+    Sub scrollConsole()
+        If (chkScrolling.Checked) Then
+            lstConsole.TopIndex = lstConsole.Items.Count - 1 - CInt(lstConsole.ItemHeight / 2)
+        End If
+    End Sub
+
     ' Write to console with a newline and automatically scroll
     Sub writeConsoleNewline(ByVal data As String)
         lstConsole.Items.Add(data)
-        lstConsole.TopIndex = lstConsole.Items.Count - 1 - CInt(lstConsole.ItemHeight / 2)
+        scrollConsole()
 
         ' TODO: Write all data received via serial port to console (think interrupt)
         '       (not just stuff I want to read and write)
@@ -188,7 +164,7 @@ Public Class MainForm
         ' Add the last line back to listbox + new byte
         lstConsole.Items.Add(CStr(last) + data)
 
-        lstConsole.TopIndex = lstConsole.Items.Count - 1 - CInt(lstConsole.ItemHeight / 2)
+        scrollConsole()
     End Sub
 
     ' When the user clicks on the 'Write' button
@@ -211,10 +187,6 @@ Public Class MainForm
             btnWrite.PerformClick()
         End If
     End Sub
-
-
-
-
 
     Private Sub MainForm_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
 
@@ -268,7 +240,36 @@ Public Class MainForm
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        Button1.Text = CStr(lstConsole.Items.Count) + CStr(lstConsole.Items(lstConsole.Items.Count - 1))
+
+        writeConsoleNewline("This button does nothing.")
+        writeConsoleNewline("Curiosity killed the cat?")
+
+    End Sub
+
+    Private Sub chkScrolling_CheckedChanged(sender As Object, e As EventArgs) Handles chkScrolling.CheckedChanged
+        chkScrolling.Checked = scrolling
+        scrolling = Not scrolling
+    End Sub
+
+    Private Sub chkPrinting_CheckedChanged(sender As Object, e As EventArgs) Handles chkPrinting.CheckedChanged
+        chkPrinting.Checked = printing
+        printing = Not printing
+    End Sub
+
+    Private Sub btnb1_Click(sender As Object, e As EventArgs) Handles btnb1.Click
+        writeConsoleNewline("This button is not finished...")
+        writeData("b1")
+        'Pause printing so we can read the next 9 bytes
+        printing = False
+
+        'Read next 9 bytes
+
+        'Print said 9 bytes to console
+        writeConsole("interesting data here")
+        writeConsoleNewline("")
+
+        'Resume printing
+        printing = True
     End Sub
 End Class
 
