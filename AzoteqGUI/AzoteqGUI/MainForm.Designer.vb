@@ -29,9 +29,9 @@ Partial Class MainForm
         Me.comCOM = New System.Windows.Forms.ComboBox()
         Me.chkConnected = New System.Windows.Forms.CheckBox()
         Me.tmrConnected = New System.Windows.Forms.Timer(Me.components)
-        Me.btnTest = New System.Windows.Forms.Button()
         Me.txtWrite = New System.Windows.Forms.TextBox()
         Me.btnWrite = New System.Windows.Forms.Button()
+        Me.Button1 = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'lstConsole
@@ -41,7 +41,7 @@ Partial Class MainForm
         Me.lstConsole.ForeColor = System.Drawing.SystemColors.Window
         Me.lstConsole.FormattingEnabled = True
         Me.lstConsole.HorizontalScrollbar = True
-        Me.lstConsole.Location = New System.Drawing.Point(12, 63)
+        Me.lstConsole.Location = New System.Drawing.Point(12, 94)
         Me.lstConsole.Name = "lstConsole"
         Me.lstConsole.Size = New System.Drawing.Size(269, 238)
         Me.lstConsole.TabIndex = 1
@@ -77,16 +77,7 @@ Partial Class MainForm
         'tmrConnected
         '
         Me.tmrConnected.Enabled = True
-        Me.tmrConnected.Interval = 1000
-        '
-        'btnTest
-        '
-        Me.btnTest.Location = New System.Drawing.Point(119, 309)
-        Me.btnTest.Name = "btnTest"
-        Me.btnTest.Size = New System.Drawing.Size(75, 23)
-        Me.btnTest.TabIndex = 6
-        Me.btnTest.Text = "Test"
-        Me.btnTest.UseVisualStyleBackColor = True
+        Me.tmrConnected.Interval = 10
         '
         'txtWrite
         '
@@ -104,14 +95,23 @@ Partial Class MainForm
         Me.btnWrite.Text = "Serial Write"
         Me.btnWrite.UseVisualStyleBackColor = True
         '
+        'Button1
+        '
+        Me.Button1.Location = New System.Drawing.Point(288, 277)
+        Me.Button1.Name = "Button1"
+        Me.Button1.Size = New System.Drawing.Size(211, 23)
+        Me.Button1.TabIndex = 10
+        Me.Button1.Text = "Button1"
+        Me.Button1.UseVisualStyleBackColor = True
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(701, 344)
+        Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.btnWrite)
         Me.Controls.Add(Me.txtWrite)
-        Me.Controls.Add(Me.btnTest)
         Me.Controls.Add(Me.chkConnected)
         Me.Controls.Add(Me.comCOM)
         Me.Controls.Add(Me.lblCOM)
@@ -128,8 +128,8 @@ Partial Class MainForm
     Friend WithEvents comCOM As System.Windows.Forms.ComboBox
     Friend WithEvents chkConnected As System.Windows.Forms.CheckBox
     Friend WithEvents tmrConnected As System.Windows.Forms.Timer
-    Friend WithEvents btnTest As System.Windows.Forms.Button
     Friend WithEvents txtWrite As System.Windows.Forms.TextBox
     Friend WithEvents btnWrite As System.Windows.Forms.Button
+    Friend WithEvents Button1 As System.Windows.Forms.Button
 
 End Class

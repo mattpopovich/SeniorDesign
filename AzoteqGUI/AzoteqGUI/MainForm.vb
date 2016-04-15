@@ -16,6 +16,8 @@ Imports System.IO
 Imports System.IO.Ports
 
 
+
+
 Public Class MainForm
 
 
@@ -62,7 +64,7 @@ Public Class MainForm
         End Try
 
         ' Add returnStr to console
-        writeConsole(returnStr)
+        writeConsoleNewline(returnStr)
 
         Return returnStr
 
@@ -82,7 +84,7 @@ Public Class MainForm
         End Try
 
         ' Add data to console
-        writeConsole(data)
+        writeConsoleNewline(data)
 
     End Sub
 
@@ -107,11 +109,12 @@ Public Class MainForm
 
                 SerialPort1.Open()
                 chkConnected.Checked = True
-                writeConsole("Connected via " + comPort)
+                writeConsoleNewline("Connected via " + comPort)
+                writeConsoleNewline("")
 
             Catch ex As Exception
                 chkConnected.Checked = False
-                writeConsole("Connection via " + comPort + " has failed: timeout.")
+                writeConsoleNewline("Connection via " + comPort + " has failed: timeout.")
                 MessageBox.Show("Serial Port read timed out.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
 
@@ -123,25 +126,69 @@ Public Class MainForm
 
         ' Check SerialPort connection every second
         If ((SerialPort1.IsOpen = False) And (CBool(chkConnected.CheckState) = True)) Then
-            writeConsole("ERROR: Connection on " + comPort + " has been lost.")
+            ' If serial port drops connection
+            writeConsoleNewline("ERROR: Connection on " + comPort + " has been lost.")
+        ElseIf ((SerialPort1.IsOpen = True) And (CBool(chkConnected.CheckState) = False)) Then
+            ' If serial port gains connection
+            chkConnected.Checked = SerialPort1.IsOpen
         End If
-        chkConnected.Checked = SerialPort1.IsOpen
+
+        If (CBool(chkConnected.CheckState) = True) Then
+            ' COM Port is connected, let's see if it has any data
+
+            Try
+
+                If (SerialPort1.BytesToRead > 0) Then
+                    Dim readByte As Byte = CByte(SerialPort1.ReadByte)
+                    If (readByte = 10) Then
+                        ' Read byte is a newline
+                        writeConsoleNewline("")
+                    Else
+                        ' Read byte is not a newline, append it to the last line in the listbox
+                        writeConsole(ChrW(readByte))
+                    End If
+
+                End If
+
+
+            Catch ex As TimeoutException
+                writeConsoleNewline("Error: Serial Port time out.")
+            Catch ex As InvalidOperationException
+                writeConsoleNewline("Error: Serial Port is closed.")
+            End Try
+
+        End If
+        
+
+
 
     End Sub
 
-    Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
+    Private Sub btnTest_Click(sender As Object, e As EventArgs)
         'Test functions/interacting with other controls
-        writeConsole(CStr(Keys.Enter))
-        writeConsole(CStr(Keys.Return))
+        writeConsoleNewline(CStr(Keys.Enter))
+        writeConsoleNewline(CStr(Keys.Return))
     End Sub
 
-    ' Write to console and automatically scroll
-    Sub writeConsole(ByVal data As String)
+    ' Write to console with a newline and automatically scroll
+    Sub writeConsoleNewline(ByVal data As String)
         lstConsole.Items.Add(data)
         lstConsole.TopIndex = lstConsole.Items.Count - 1 - CInt(lstConsole.ItemHeight / 2)
 
         ' TODO: Write all data received via serial port to console (think interrupt)
         '       (not just stuff I want to read and write)
+    End Sub
+
+    ' Write to console without a newline and automatically scroll
+    Sub writeConsole(ByVal data As String)
+        Dim last As String
+        last = CStr(lstConsole.Items(lstConsole.Items.Count - 1))
+        ' Remove the last item in the listbox
+        lstConsole.Items.RemoveAt(lstConsole.Items.Count - 1)
+        ' Add the last line back to listbox + new byte
+        lstConsole.Items.Add(CStr(last) + data)
+
+        lstConsole.TopIndex = lstConsole.Items.Count - 1 - CInt(lstConsole.ItemHeight / 2)
     End Sub
 
     ' When the user clicks on the 'Write' button
@@ -151,7 +198,7 @@ Public Class MainForm
         Else
             writeData(txtWrite.Text)
             txtWrite.Text = ""
-            receiveData()
+            'receiveData()
         End If
 
         'TODO: Add disconnect button for COM
@@ -165,19 +212,63 @@ Public Class MainForm
         End If
     End Sub
 
-    Public Class Sensors
-        Enum one
-            x = 390
-            y = 50
-        End Enum
 
-    End Class
+
 
 
     Private Sub MainForm_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
-        
+
         ' Fill the circle with the same color as its border.
-        e.Graphics.FillEllipse(Brushes.Black, Sensors.one.x, Sensors.one.y, 20, 20)
+        'e.Graphics.FillEllipse(Brushes.Black, Sensors.one.x, Sensors.one.y, 20, 20)
+        'e.Graphics.FillEllipse(Brushes.Black, Sensors.two.x, Sensors.two.y, 20, 20)
+
+        'The center coordinate
+        Const x = 530
+        Const y = 200
+
+        ' sensor(#, 0 = x; 1 = y)
+        Dim sensors(,) As Integer = {
+            {x - 110, y - 140},
+            {x - 110, y - 110},
+            {x - 110, y - 80},
+            {x - 110, y - 50},
+            {x - 110, y - 20},
+            {x - 110, y + 10},
+            {x - 110, y + 40},
+            {x - 60, y + 40},
+            {x, y + 40},
+            {x + 50, y + 40},
+            {x + 50, y + 10},
+            {x + 50, y - 20},
+            {x + 50, y - 50},
+            {x + 50, y - 80},
+            {x + 50, y - 110},
+            {x + 50, y - 140}
+        }
+
+        Dim maxDim0 As Integer = UBound(sensors, 1)
+        Dim maxDim1 As Integer = UBound(sensors, 2)
+
+        For i As Integer = 0 To maxDim0
+            ' Credit: https://www.youtube.com/watch?v=EqIXayguHUc 
+            ' 0 <= Rnd() <= 1
+            'Color.FromArgb(red, green, blue)
+
+            ' Count = 0 - 1000
+            Dim c As Color = Color.FromArgb(CInt(255 / (16 / i)), CInt(255 / (16 / i)), 0)
+            Dim br As New SolidBrush(c)
+
+            e.Graphics.FillEllipse(br, sensors(i, 0), sensors(i, 1), 20, 20)
+
+
+        Next
+
+
+
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        Button1.Text = CStr(lstConsole.Items.Count) + CStr(lstConsole.Items(lstConsole.Items.Count - 1))
     End Sub
 End Class
 
