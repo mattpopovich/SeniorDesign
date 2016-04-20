@@ -29,9 +29,21 @@ Partial Class MainForm
         Me.comCOM = New System.Windows.Forms.ComboBox()
         Me.chkConnected = New System.Windows.Forms.CheckBox()
         Me.tmrConnected = New System.Windows.Forms.Timer(Me.components)
-        Me.btnTest = New System.Windows.Forms.Button()
         Me.txtWrite = New System.Windows.Forms.TextBox()
         Me.btnWrite = New System.Windows.Forms.Button()
+        Me.Button1 = New System.Windows.Forms.Button()
+        Me.chkScrolling = New System.Windows.Forms.CheckBox()
+        Me.chkPrinting = New System.Windows.Forms.CheckBox()
+        Me.btnb1 = New System.Windows.Forms.Button()
+        Me.btnb2 = New System.Windows.Forms.Button()
+        Me.btnb3 = New System.Windows.Forms.Button()
+        Me.btnb4 = New System.Windows.Forms.Button()
+        Me.btnb = New System.Windows.Forms.Button()
+        Me.btnClear = New System.Windows.Forms.Button()
+        Me.btnt1 = New System.Windows.Forms.Button()
+        Me.MaskBox = New System.Windows.Forms.PictureBox()
+        Me.btnbLoop = New System.Windows.Forms.Button()
+        CType(Me.MaskBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'lstConsole
@@ -41,7 +53,7 @@ Partial Class MainForm
         Me.lstConsole.ForeColor = System.Drawing.SystemColors.Window
         Me.lstConsole.FormattingEnabled = True
         Me.lstConsole.HorizontalScrollbar = True
-        Me.lstConsole.Location = New System.Drawing.Point(12, 63)
+        Me.lstConsole.Location = New System.Drawing.Point(12, 94)
         Me.lstConsole.Name = "lstConsole"
         Me.lstConsole.Size = New System.Drawing.Size(269, 238)
         Me.lstConsole.TabIndex = 1
@@ -77,16 +89,7 @@ Partial Class MainForm
         'tmrConnected
         '
         Me.tmrConnected.Enabled = True
-        Me.tmrConnected.Interval = 1000
-        '
-        'btnTest
-        '
-        Me.btnTest.Location = New System.Drawing.Point(119, 309)
-        Me.btnTest.Name = "btnTest"
-        Me.btnTest.Size = New System.Drawing.Size(75, 23)
-        Me.btnTest.TabIndex = 6
-        Me.btnTest.Text = "Test"
-        Me.btnTest.UseVisualStyleBackColor = True
+        Me.tmrConnected.Interval = 1
         '
         'txtWrite
         '
@@ -104,20 +107,141 @@ Partial Class MainForm
         Me.btnWrite.Text = "Serial Write"
         Me.btnWrite.UseVisualStyleBackColor = True
         '
+        'Button1
+        '
+        Me.Button1.Location = New System.Drawing.Point(288, 277)
+        Me.Button1.Name = "Button1"
+        Me.Button1.Size = New System.Drawing.Size(82, 23)
+        Me.Button1.TabIndex = 10
+        Me.Button1.Text = "Button1"
+        Me.Button1.UseVisualStyleBackColor = True
+        '
+        'chkScrolling
+        '
+        Me.chkScrolling.AutoSize = True
+        Me.chkScrolling.Location = New System.Drawing.Point(12, 67)
+        Me.chkScrolling.Name = "chkScrolling"
+        Me.chkScrolling.Size = New System.Drawing.Size(66, 17)
+        Me.chkScrolling.TabIndex = 11
+        Me.chkScrolling.Text = "Scrolling"
+        Me.chkScrolling.UseVisualStyleBackColor = True
+        '
+        'chkPrinting
+        '
+        Me.chkPrinting.AutoSize = True
+        Me.chkPrinting.Location = New System.Drawing.Point(220, 67)
+        Me.chkPrinting.Name = "chkPrinting"
+        Me.chkPrinting.Size = New System.Drawing.Size(61, 17)
+        Me.chkPrinting.TabIndex = 12
+        Me.chkPrinting.Text = "Printing"
+        Me.chkPrinting.UseVisualStyleBackColor = True
+        '
+        'btnb1
+        '
+        Me.btnb1.Location = New System.Drawing.Point(288, 81)
+        Me.btnb1.Name = "btnb1"
+        Me.btnb1.Size = New System.Drawing.Size(38, 23)
+        Me.btnb1.TabIndex = 13
+        Me.btnb1.Text = "b1"
+        Me.btnb1.UseVisualStyleBackColor = True
+        '
+        'btnb2
+        '
+        Me.btnb2.Location = New System.Drawing.Point(288, 110)
+        Me.btnb2.Name = "btnb2"
+        Me.btnb2.Size = New System.Drawing.Size(38, 23)
+        Me.btnb2.TabIndex = 14
+        Me.btnb2.Text = "b2"
+        Me.btnb2.UseVisualStyleBackColor = True
+        '
+        'btnb3
+        '
+        Me.btnb3.Location = New System.Drawing.Point(288, 139)
+        Me.btnb3.Name = "btnb3"
+        Me.btnb3.Size = New System.Drawing.Size(38, 23)
+        Me.btnb3.TabIndex = 15
+        Me.btnb3.Text = "b3"
+        Me.btnb3.UseVisualStyleBackColor = True
+        '
+        'btnb4
+        '
+        Me.btnb4.Location = New System.Drawing.Point(288, 168)
+        Me.btnb4.Name = "btnb4"
+        Me.btnb4.Size = New System.Drawing.Size(38, 23)
+        Me.btnb4.TabIndex = 16
+        Me.btnb4.Text = "b4"
+        Me.btnb4.UseVisualStyleBackColor = True
+        '
+        'btnb
+        '
+        Me.btnb.Location = New System.Drawing.Point(332, 81)
+        Me.btnb.Name = "btnb"
+        Me.btnb.Size = New System.Drawing.Size(38, 110)
+        Me.btnb.TabIndex = 17
+        Me.btnb.Text = "b"
+        Me.btnb.UseVisualStyleBackColor = True
+        '
+        'btnClear
+        '
+        Me.btnClear.Location = New System.Drawing.Point(95, 63)
+        Me.btnClear.Name = "btnClear"
+        Me.btnClear.Size = New System.Drawing.Size(90, 23)
+        Me.btnClear.TabIndex = 18
+        Me.btnClear.Text = "Clear Console"
+        Me.btnClear.UseVisualStyleBackColor = True
+        '
+        'btnt1
+        '
+        Me.btnt1.Location = New System.Drawing.Point(288, 226)
+        Me.btnt1.Name = "btnt1"
+        Me.btnt1.Size = New System.Drawing.Size(82, 23)
+        Me.btnt1.TabIndex = 19
+        Me.btnt1.Text = "t1"
+        Me.btnt1.UseVisualStyleBackColor = True
+        '
+        'MaskBox
+        '
+        Me.MaskBox.Location = New System.Drawing.Point(415, 37)
+        Me.MaskBox.Name = "MaskBox"
+        Me.MaskBox.Size = New System.Drawing.Size(222, 263)
+        Me.MaskBox.TabIndex = 20
+        Me.MaskBox.TabStop = False
+        '
+        'btnbLoop
+        '
+        Me.btnbLoop.Location = New System.Drawing.Point(288, 197)
+        Me.btnbLoop.Name = "btnbLoop"
+        Me.btnbLoop.Size = New System.Drawing.Size(82, 23)
+        Me.btnbLoop.TabIndex = 21
+        Me.btnbLoop.Text = "SS"
+        Me.btnbLoop.UseVisualStyleBackColor = True
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(295, 344)
+        Me.ClientSize = New System.Drawing.Size(678, 344)
+        Me.Controls.Add(Me.btnbLoop)
+        Me.Controls.Add(Me.MaskBox)
+        Me.Controls.Add(Me.btnt1)
+        Me.Controls.Add(Me.btnClear)
+        Me.Controls.Add(Me.btnb)
+        Me.Controls.Add(Me.btnb4)
+        Me.Controls.Add(Me.btnb3)
+        Me.Controls.Add(Me.btnb2)
+        Me.Controls.Add(Me.btnb1)
+        Me.Controls.Add(Me.chkPrinting)
+        Me.Controls.Add(Me.chkScrolling)
+        Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.btnWrite)
         Me.Controls.Add(Me.txtWrite)
-        Me.Controls.Add(Me.btnTest)
         Me.Controls.Add(Me.chkConnected)
         Me.Controls.Add(Me.comCOM)
         Me.Controls.Add(Me.lblCOM)
         Me.Controls.Add(Me.lstConsole)
         Me.Name = "MainForm"
         Me.Text = "Azoteq IQS 316 GUI"
+        CType(Me.MaskBox, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -128,8 +252,19 @@ Partial Class MainForm
     Friend WithEvents comCOM As System.Windows.Forms.ComboBox
     Friend WithEvents chkConnected As System.Windows.Forms.CheckBox
     Friend WithEvents tmrConnected As System.Windows.Forms.Timer
-    Friend WithEvents btnTest As System.Windows.Forms.Button
     Friend WithEvents txtWrite As System.Windows.Forms.TextBox
     Friend WithEvents btnWrite As System.Windows.Forms.Button
+    Friend WithEvents Button1 As System.Windows.Forms.Button
+    Friend WithEvents chkScrolling As System.Windows.Forms.CheckBox
+    Friend WithEvents chkPrinting As System.Windows.Forms.CheckBox
+    Friend WithEvents btnb1 As System.Windows.Forms.Button
+    Friend WithEvents btnb2 As System.Windows.Forms.Button
+    Friend WithEvents btnb3 As System.Windows.Forms.Button
+    Friend WithEvents btnb4 As System.Windows.Forms.Button
+    Friend WithEvents btnb As System.Windows.Forms.Button
+    Friend WithEvents btnClear As System.Windows.Forms.Button
+    Friend WithEvents btnt1 As System.Windows.Forms.Button
+    Friend WithEvents PictureBox As System.Windows.Forms.PictureBox
+    Friend WithEvents btnbLoop As System.Windows.Forms.Button
 
 End Class
