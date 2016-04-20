@@ -40,6 +40,9 @@ Partial Class MainForm
         Me.btnb4 = New System.Windows.Forms.Button()
         Me.btnb = New System.Windows.Forms.Button()
         Me.btnClear = New System.Windows.Forms.Button()
+        Me.btnt1 = New System.Windows.Forms.Button()
+        Me.MaskBox = New System.Windows.Forms.PictureBox()
+        CType(Me.MaskBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'lstConsole
@@ -107,7 +110,7 @@ Partial Class MainForm
         '
         Me.Button1.Location = New System.Drawing.Point(288, 277)
         Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(211, 23)
+        Me.Button1.Size = New System.Drawing.Size(82, 23)
         Me.Button1.TabIndex = 10
         Me.Button1.Text = "Button1"
         Me.Button1.UseVisualStyleBackColor = True
@@ -186,11 +189,30 @@ Partial Class MainForm
         Me.btnClear.Text = "Clear Console"
         Me.btnClear.UseVisualStyleBackColor = True
         '
+        'btnt1
+        '
+        Me.btnt1.Location = New System.Drawing.Point(288, 197)
+        Me.btnt1.Name = "btnt1"
+        Me.btnt1.Size = New System.Drawing.Size(82, 23)
+        Me.btnt1.TabIndex = 19
+        Me.btnt1.Text = "t1"
+        Me.btnt1.UseVisualStyleBackColor = True
+        '
+        'MaskBox
+        '
+        Me.MaskBox.Location = New System.Drawing.Point(994, 13)
+        Me.MaskBox.Name = "MaskBox"
+        Me.MaskBox.Size = New System.Drawing.Size(327, 319)
+        Me.MaskBox.TabIndex = 20
+        Me.MaskBox.TabStop = False
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(701, 344)
+        Me.ClientSize = New System.Drawing.Size(1333, 344)
+        Me.Controls.Add(Me.MaskBox)
+        Me.Controls.Add(Me.btnt1)
         Me.Controls.Add(Me.btnClear)
         Me.Controls.Add(Me.btnb)
         Me.Controls.Add(Me.btnb4)
@@ -208,6 +230,7 @@ Partial Class MainForm
         Me.Controls.Add(Me.lstConsole)
         Me.Name = "MainForm"
         Me.Text = "Azoteq IQS 316 GUI"
+        CType(Me.MaskBox, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -229,5 +252,7 @@ Partial Class MainForm
     Friend WithEvents btnb4 As System.Windows.Forms.Button
     Friend WithEvents btnb As System.Windows.Forms.Button
     Friend WithEvents btnClear As System.Windows.Forms.Button
+    Friend WithEvents btnt1 As System.Windows.Forms.Button
+    Friend WithEvents PictureBox As System.Windows.Forms.PictureBox
 
 End Class

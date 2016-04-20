@@ -27,7 +27,7 @@ Public Class MainForm
     Dim scrolling As Boolean = True
     Dim printing As Boolean = True
     Dim channels(20) As Integer
-
+    Friend WithEvents MaskBox As System.Windows.Forms.PictureBox
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -194,35 +194,40 @@ Public Class MainForm
         End If
     End Sub
 
-    'Sub animate()
-    Private Sub MainForm_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
+    Private Sub drawMask()
+        Dim maskImg As Image = My.Resources.mask
 
-        ' Fill the circle with the same color as its border.
-        'e.Graphics.FillEllipse(Brushes.Black, Sensors.one.x, Sensors.one.y, 20, 20)
-        'e.Graphics.FillEllipse(Brushes.Black, Sensors.two.x, Sensors.two.y, 20, 20)
+        Dim g As System.Drawing.Graphics
+        MaskBox.Refresh()
+        g = MaskBox.CreateGraphics()
+
+        'Draw the mask base image
+        Dim maskWidth As Integer = 200
+        Dim maskHeight As Integer = CInt(maskImg.Height * (maskWidth / maskImg.Width))
+        g.DrawImage(maskImg, 0, 0, maskWidth, maskHeight)
 
         'The center coordinate
-        Const x = 530
-        Const y = 200
+        Dim x As Integer = CInt(maskWidth / 2)
+        Dim y As Integer = CInt(maskHeight / 2)
 
         ' sensor(#, 0 = x; 1 = y)
         Dim sensors(,) As Integer = {
-            {x - 110, y - 140},
-            {x - 110, y - 110},
-            {x - 110, y - 80},
-            {x - 110, y - 50},
-            {x - 110, y - 20},
-            {x - 110, y + 10},
-            {x - 110, y + 40},
-            {x - 60, y + 40},
-            {x, y + 40},
-            {x + 50, y + 40},
-            {x + 50, y + 10},
-            {x + 50, y - 20},
-            {x + 50, y - 50},
-            {x + 50, y - 80},
-            {x + 50, y - 110},
-            {x + 50, y - 140}
+            {x - 25, y - 80},
+            {x - 30, y - 55},
+            {x - 40, y - 30},
+            {x - 60, y - 5},
+            {x - 75, y + 20},
+            {x - 85, y + 45},
+            {x - 75, y + 80},
+            {x - 30, y + 100},
+            {x + 30, y + 100},
+            {x + 75, y + 80},
+            {x + 85, y + 45},
+            {x + 75, y + 20},
+            {x + 60, y - 5},
+            {x + 40, y - 30},
+            {x + 30, y - 55},
+            {x + 25, y - 80}
         }
 
         Dim maxDim0 As Integer = UBound(sensors, 1)
@@ -237,10 +242,8 @@ Public Class MainForm
             Dim c As Color = Color.FromArgb(CInt(255 / (16 / i)), CInt(255 / (16 / i)), 0)
             Dim br As New SolidBrush(c)
 
-            e.Graphics.FillEllipse(br, sensors(i, 0), sensors(i, 1), 20, 20)
-
+            g.FillEllipse(br, sensors(i, 0) - 10, sensors(i, 1) - 10, 20, 20)
         Next
-
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
@@ -333,6 +336,26 @@ Public Class MainForm
         lstConsole.Items.Clear()
     End Sub
 
+    Private Sub btnt1_Click(sender As Object, e As EventArgs) Handles btnt1.Click
+        While (SerialPort1.BytesToRead <> 0) ' aka !=
+            'Wait here until the buffer is empty
+        End While
+
+        printing = False    'Pause printing so we can read the next 9 bytes
+        writeData("t1")
+
+        'Resume printing
+        printing = True
+    End Sub
+
+    Private Sub MaskBox_Click(sender As Object, e As EventArgs) Handles MaskBox.Click
+
+    End Sub
+
+    Private Sub MainForm_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
+        ' Initialize mask picture
+        drawMask()
+    End Sub
 End Class
 
 
