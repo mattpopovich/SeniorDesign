@@ -26,6 +26,7 @@ Public Class MainForm
     Dim TIMEOUT As Integer = 1000
     Dim scrolling As Boolean = True
     Dim printing As Boolean = True
+    Dim channels(20) As Integer
 
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -38,6 +39,11 @@ Public Class MainForm
         ' Set checkboxes
         chkScrolling.Checked = scrolling
         chkPrinting.Checked = printing
+
+        ' Initialize array
+        For i As Integer = 0 To 19
+            channels(i) = 0
+        Next
 
     End Sub
 
@@ -110,7 +116,8 @@ Public Class MainForm
 
             Try
 
-                If (SerialPort1.BytesToRead > 0) Then
+                While (SerialPort1.BytesToRead > 0)
+
                     Dim readByte As Byte = CByte(SerialPort1.ReadByte)
                     If (readByte = 10) Then
                         ' Read byte is a newline
@@ -120,8 +127,7 @@ Public Class MainForm
                         writeConsole(ChrW(readByte))
                     End If
 
-                End If
-
+                End While
 
             Catch ex As TimeoutException
                 writeConsoleNewline("Error: Serial Port time out.")
@@ -188,6 +194,7 @@ Public Class MainForm
         End If
     End Sub
 
+    'Sub animate()
     Private Sub MainForm_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
 
         ' Fill the circle with the same color as its border.
@@ -232,10 +239,7 @@ Public Class MainForm
 
             e.Graphics.FillEllipse(br, sensors(i, 0), sensors(i, 1), 20, 20)
 
-
         Next
-
-
 
     End Sub
 
@@ -256,20 +260,64 @@ Public Class MainForm
         printing = Not printing
     End Sub
 
-    Private Sub btnb1_Click(sender As Object, e As EventArgs) Handles btnb1.Click
-        writeConsoleNewline("This button is not finished...")
-        writeData("b1")
-        'Pause printing so we can read the next 9 bytes
-        printing = False
+    Sub b(ByVal i As Integer)
 
-        'Read next 9 bytes
+        While (SerialPort1.BytesToRead <> 0) ' aka !=
+            'Wait here until the buffer is empty
+        End While
 
-        'Print said 9 bytes to console
-        writeConsole("interesting data here")
-        writeConsoleNewline("")
+        printing = False    'Pause printing so we can read the next 9 bytes
+        Dim command As String = "b" & Str(i)
+        writeData(command)
+        ' b1 returns channels 4,5,6,7
+        ' b2 returns channels 8,9,10,11
+        ' b3 returns channels 12,13,14,15
+        ' b4 returns channels 16,17,18,19
+
+        ' Verify group number
+        Dim group As Integer = SerialPort1.ReadByte()
+        writeConsoleNewline(CStr(group))
+        If (group <> 1) Then    ' aka !=
+            Exit Sub
+        End If
+
+        'Read next 8 bytes
+        For j As Integer = (4 * i) To ((4 * i) + 3)
+            channels(j) = SerialPort1.ReadByte() << 8           ' shift HI one byte left
+            channels(j) = channels(j) Or SerialPort1.ReadByte() ' bitwise or
+            writeConsoleNewline(CStr(channels(j)))              ' print to lstConsole
+            lstConsole.Items.Add("in loop")
+            lstConsole.Items.Add("test")
+        Next
+
+        ' TODO: Refresh form
 
         'Resume printing
         printing = True
+
+    End Sub
+
+
+    Private Sub btnb1_Click(sender As Object, e As EventArgs) Handles btnb1.Click
+        b(1)
+    End Sub
+
+    Private Sub btnb2_Click(sender As Object, e As EventArgs) Handles btnb2.Click
+        b(2)
+    End Sub
+
+    Private Sub btnb3_Click(sender As Object, e As EventArgs) Handles btnb3.Click
+        b(3)
+    End Sub
+
+    Private Sub btnb4_Click(sender As Object, e As EventArgs) Handles btnb4.Click
+        b(4)
+    End Sub
+
+    Private Sub btnb_Click(sender As Object, e As EventArgs) Handles btnb.Click
+        For i As Integer = 1 To 4
+            b(i)
+        Next
     End Sub
 End Class
 

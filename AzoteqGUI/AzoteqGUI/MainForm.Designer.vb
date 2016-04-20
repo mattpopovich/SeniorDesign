@@ -35,6 +35,10 @@ Partial Class MainForm
         Me.chkScrolling = New System.Windows.Forms.CheckBox()
         Me.chkPrinting = New System.Windows.Forms.CheckBox()
         Me.btnb1 = New System.Windows.Forms.Button()
+        Me.btnb2 = New System.Windows.Forms.Button()
+        Me.btnb3 = New System.Windows.Forms.Button()
+        Me.btnb4 = New System.Windows.Forms.Button()
+        Me.btnb = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'lstConsole
@@ -136,11 +140,51 @@ Partial Class MainForm
         Me.btnb1.Text = "b1"
         Me.btnb1.UseVisualStyleBackColor = True
         '
+        'btnb2
+        '
+        Me.btnb2.Location = New System.Drawing.Point(288, 110)
+        Me.btnb2.Name = "btnb2"
+        Me.btnb2.Size = New System.Drawing.Size(38, 23)
+        Me.btnb2.TabIndex = 14
+        Me.btnb2.Text = "b2"
+        Me.btnb2.UseVisualStyleBackColor = True
+        '
+        'btnb3
+        '
+        Me.btnb3.Location = New System.Drawing.Point(288, 139)
+        Me.btnb3.Name = "btnb3"
+        Me.btnb3.Size = New System.Drawing.Size(38, 23)
+        Me.btnb3.TabIndex = 15
+        Me.btnb3.Text = "b3"
+        Me.btnb3.UseVisualStyleBackColor = True
+        '
+        'btnb4
+        '
+        Me.btnb4.Location = New System.Drawing.Point(288, 168)
+        Me.btnb4.Name = "btnb4"
+        Me.btnb4.Size = New System.Drawing.Size(38, 23)
+        Me.btnb4.TabIndex = 16
+        Me.btnb4.Text = "b4"
+        Me.btnb4.UseVisualStyleBackColor = True
+        '
+        'btnb
+        '
+        Me.btnb.Location = New System.Drawing.Point(332, 81)
+        Me.btnb.Name = "btnb"
+        Me.btnb.Size = New System.Drawing.Size(38, 110)
+        Me.btnb.TabIndex = 17
+        Me.btnb.Text = "b"
+        Me.btnb.UseVisualStyleBackColor = True
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(701, 344)
+        Me.Controls.Add(Me.btnb)
+        Me.Controls.Add(Me.btnb4)
+        Me.Controls.Add(Me.btnb3)
+        Me.Controls.Add(Me.btnb2)
         Me.Controls.Add(Me.btnb1)
         Me.Controls.Add(Me.chkPrinting)
         Me.Controls.Add(Me.chkScrolling)
@@ -169,5 +213,9 @@ Partial Class MainForm
     Friend WithEvents chkScrolling As System.Windows.Forms.CheckBox
     Friend WithEvents chkPrinting As System.Windows.Forms.CheckBox
     Friend WithEvents btnb1 As System.Windows.Forms.Button
+    Friend WithEvents btnb2 As System.Windows.Forms.Button
+    Friend WithEvents btnb3 As System.Windows.Forms.Button
+    Friend WithEvents btnb4 As System.Windows.Forms.Button
+    Friend WithEvents btnb As System.Windows.Forms.Button
 
 End Class
