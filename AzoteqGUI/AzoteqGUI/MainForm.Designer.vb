@@ -201,7 +201,9 @@ Partial Class MainForm
         '
         'MaskBox
         '
+        Me.MaskBox.Location = New System.Drawing.Point(415, 37)
         Me.MaskBox.Name = "MaskBox"
+        Me.MaskBox.Size = New System.Drawing.Size(222, 263)
         Me.MaskBox.TabIndex = 20
         Me.MaskBox.TabStop = False
         '
@@ -218,6 +220,7 @@ Partial Class MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.ClientSize = New System.Drawing.Size(678, 344)
         Me.Controls.Add(Me.btnbLoop)
         Me.Controls.Add(Me.MaskBox)
         Me.Controls.Add(Me.btnt1)
