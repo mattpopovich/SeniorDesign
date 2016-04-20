@@ -89,6 +89,8 @@ Public Class MainForm
                 writeConsoleNewline("Connected via " & comPort)
                 writeConsoleNewline("")
 
+                SerialPort1.DtrEnable = True            ' Reset the Arduino (hardware reset)
+
             Catch ex As Exception
                 chkConnected.Checked = False
                 writeConsoleNewline("Connection via " & comPort & " has failed: timeout.")
@@ -205,6 +207,19 @@ Public Class MainForm
         Dim maskWidth As Integer = 200
         Dim maskHeight As Integer = CInt(maskImg.Height * (maskWidth / maskImg.Width))
         g.DrawImage(maskImg, 0, 0, maskWidth, maskHeight)
+    End Sub
+
+    Private Sub drawPads()
+        Dim MAPPING() As Integer = {14, 15, 12, 13, 10, 11, 17, 16, 19, 18, 8, 9, 6, 7, 4, 5}
+
+        Dim maskImg As Image = My.Resources.mask
+
+        Dim g As System.Drawing.Graphics
+        g = MaskBox.CreateGraphics()
+
+        'Draw the mask base image
+        Dim maskWidth As Integer = 200
+        Dim maskHeight As Integer = CInt(maskImg.Height * (maskWidth / maskImg.Width))
 
         'The center coordinate
         Dim x As Integer = CInt(maskWidth / 2)
@@ -239,7 +254,20 @@ Public Class MainForm
             'Color.FromArgb(red, green, blue)
 
             ' Count = 0 - 1000
-            Dim c As Color = Color.FromArgb(CInt(255 / (16 / i)), CInt(255 / (16 / i)), 0)
+            Dim count As Integer = channels(MAPPING(i))
+            Dim red, green As Integer
+
+            If (count > 1000) Then
+                count = 1000
+            End If
+            red = CInt(count / 392)
+            green = CInt((count - 275) / 2.84)
+            If (green < 0) Then
+                green = 0
+            End If
+
+
+            Dim c As Color = Color.FromArgb(green, 255 - green, 0)
             Dim br As New SolidBrush(c)
 
             g.FillEllipse(br, sensors(i, 0) - 10, sensors(i, 1) - 10, 20, 20)
@@ -312,24 +340,33 @@ Public Class MainForm
 
     Private Sub btnb1_Click(sender As Object, e As EventArgs) Handles btnb1.Click
         b(1)
+        drawMask()
     End Sub
 
     Private Sub btnb2_Click(sender As Object, e As EventArgs) Handles btnb2.Click
         b(2)
+        drawMask()
+
     End Sub
 
     Private Sub btnb3_Click(sender As Object, e As EventArgs) Handles btnb3.Click
         b(3)
+        drawMask()
+
     End Sub
 
     Private Sub btnb4_Click(sender As Object, e As EventArgs) Handles btnb4.Click
         b(4)
+        drawMask()
+
     End Sub
 
     Private Sub btnb_Click(sender As Object, e As EventArgs) Handles btnb.Click
         For i As Integer = 1 To 4
             b(i)
         Next
+        drawMask()
+
     End Sub
 
     Private Sub btnClear_Click(sender As Object, e As EventArgs) Handles btnClear.Click
@@ -355,6 +392,17 @@ Public Class MainForm
     Private Sub MainForm_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
         ' Initialize mask picture
         drawMask()
+    End Sub
+
+    Private Sub btnbLoop_Click(sender As Object, e As EventArgs) Handles btnbLoop.Click
+        ' Runs for about 15 seconds. 
+        For j As Integer = 0 To 100
+            For i As Integer = 1 To 4
+                b(i)
+            Next
+            drawPads()
+        Next
+
     End Sub
 End Class
 

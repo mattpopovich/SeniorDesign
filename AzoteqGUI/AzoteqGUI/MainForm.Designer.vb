@@ -42,6 +42,7 @@ Partial Class MainForm
         Me.btnClear = New System.Windows.Forms.Button()
         Me.btnt1 = New System.Windows.Forms.Button()
         Me.MaskBox = New System.Windows.Forms.PictureBox()
+        Me.btnbLoop = New System.Windows.Forms.Button()
         CType(Me.MaskBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -191,7 +192,7 @@ Partial Class MainForm
         '
         'btnt1
         '
-        Me.btnt1.Location = New System.Drawing.Point(288, 197)
+        Me.btnt1.Location = New System.Drawing.Point(288, 226)
         Me.btnt1.Name = "btnt1"
         Me.btnt1.Size = New System.Drawing.Size(82, 23)
         Me.btnt1.TabIndex = 19
@@ -200,17 +201,24 @@ Partial Class MainForm
         '
         'MaskBox
         '
-        Me.MaskBox.Location = New System.Drawing.Point(994, 13)
         Me.MaskBox.Name = "MaskBox"
-        Me.MaskBox.Size = New System.Drawing.Size(327, 319)
         Me.MaskBox.TabIndex = 20
         Me.MaskBox.TabStop = False
+        '
+        'btnbLoop
+        '
+        Me.btnbLoop.Location = New System.Drawing.Point(288, 197)
+        Me.btnbLoop.Name = "btnbLoop"
+        Me.btnbLoop.Size = New System.Drawing.Size(82, 23)
+        Me.btnbLoop.TabIndex = 21
+        Me.btnbLoop.Text = "SS"
+        Me.btnbLoop.UseVisualStyleBackColor = True
         '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1333, 344)
+        Me.Controls.Add(Me.btnbLoop)
         Me.Controls.Add(Me.MaskBox)
         Me.Controls.Add(Me.btnt1)
         Me.Controls.Add(Me.btnClear)
@@ -254,5 +262,6 @@ Partial Class MainForm
     Friend WithEvents btnClear As System.Windows.Forms.Button
     Friend WithEvents btnt1 As System.Windows.Forms.Button
     Friend WithEvents PictureBox As System.Windows.Forms.PictureBox
+    Friend WithEvents btnbLoop As System.Windows.Forms.Button
 
 End Class
