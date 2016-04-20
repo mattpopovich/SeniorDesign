@@ -78,7 +78,10 @@ void serialEvent(){
   #endif
   switch(Serial.read()){
     case 's':
-      sendSamples(Serial.read()-48);
+      sendSamples(Serial.read()-48, false);
+      break;
+    case 'b':
+      sendSamples(Serial.read()-48, true);
       break;
     case 'l':
       sendLTA(Serial.read()-48);
@@ -119,6 +122,7 @@ void serialEvent(){
       Serial.println(F("  Group 4:16,17,18,19"));
       Serial.println(F("MENU OPTIONS:"));
       Serial.println(F("s#:    get group #'s sample data"));
+      Serial.println(F("b#:    get group #'s sample data (bin)"));
       Serial.println(F("l#:    get group #'s LTA data"));
       Serial.println(F("p:     pretty print channels"));
       Serial.println(F("t#:    tune channel counts to #*1000"));
@@ -164,30 +168,30 @@ void resetIQS(){
   digitalWrite(MCLR,1);
 }
 
-void sendSamples(byte group){
+void sendSamples(byte group, boolean bin){
   byte* ptr = getGroupPtr(group);
 
   if(ptr){
     // send group #
-    #ifdef GUI_PRINT
-    Serial.write(ptr[0]);// for GUI tool
-    #else
-    Serial.println(ptr[0]);// for pretty debugging
-    #endif
+    if(bin){
+      Serial.write(ptr[0]);// for GUI tool
+    } else {
+      Serial.println(ptr[0]);// for pretty debugging
+    }// if
     ptr += 1;// move to beginning of LTA data
     for(byte i=0;i<SAMPLE_DATA_LEN;i++){
-      #ifdef GUI_PRINT
-      Serial.write(ptr[i]);// for GUI tool
-      #else
-      Serial.println(ptr[i]);// for pretty debugging
-      #endif
+      if(bin){
+        Serial.write(ptr[i]);// for GUI tool
+      } else {
+        Serial.println(ptr[i]);// for pretty debugging
+      }// if
     }// for
   } else {
-    #ifdef GUI_PRINT
-    Serial.write(0xff);// -1 for group to tell GUI error occured
-    #else
-    Serial.println(F("SAMPLE DOESN'T EXIST!"));
-    #endif
+    if(bin){
+      Serial.write(0xff);// -1 for group to tell GUI error occured
+    } else {
+      Serial.println(F("SAMPLE DOESN'T EXIST!"));
+    }// if
   }// if
 }
 
