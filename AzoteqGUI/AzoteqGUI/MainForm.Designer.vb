@@ -39,6 +39,7 @@ Partial Class MainForm
         Me.btnb3 = New System.Windows.Forms.Button()
         Me.btnb4 = New System.Windows.Forms.Button()
         Me.btnb = New System.Windows.Forms.Button()
+        Me.btnClear = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'lstConsole
@@ -48,9 +49,9 @@ Partial Class MainForm
         Me.lstConsole.ForeColor = System.Drawing.SystemColors.Window
         Me.lstConsole.FormattingEnabled = True
         Me.lstConsole.HorizontalScrollbar = True
-        Me.lstConsole.Location = New System.Drawing.Point(12, 81)
+        Me.lstConsole.Location = New System.Drawing.Point(12, 94)
         Me.lstConsole.Name = "lstConsole"
-        Me.lstConsole.Size = New System.Drawing.Size(269, 251)
+        Me.lstConsole.Size = New System.Drawing.Size(269, 238)
         Me.lstConsole.TabIndex = 1
         '
         'lblCOM
@@ -114,7 +115,7 @@ Partial Class MainForm
         'chkScrolling
         '
         Me.chkScrolling.AutoSize = True
-        Me.chkScrolling.Location = New System.Drawing.Point(46, 64)
+        Me.chkScrolling.Location = New System.Drawing.Point(12, 67)
         Me.chkScrolling.Name = "chkScrolling"
         Me.chkScrolling.Size = New System.Drawing.Size(66, 17)
         Me.chkScrolling.TabIndex = 11
@@ -124,7 +125,7 @@ Partial Class MainForm
         'chkPrinting
         '
         Me.chkPrinting.AutoSize = True
-        Me.chkPrinting.Location = New System.Drawing.Point(168, 64)
+        Me.chkPrinting.Location = New System.Drawing.Point(220, 67)
         Me.chkPrinting.Name = "chkPrinting"
         Me.chkPrinting.Size = New System.Drawing.Size(61, 17)
         Me.chkPrinting.TabIndex = 12
@@ -176,11 +177,21 @@ Partial Class MainForm
         Me.btnb.Text = "b"
         Me.btnb.UseVisualStyleBackColor = True
         '
+        'btnClear
+        '
+        Me.btnClear.Location = New System.Drawing.Point(95, 63)
+        Me.btnClear.Name = "btnClear"
+        Me.btnClear.Size = New System.Drawing.Size(90, 23)
+        Me.btnClear.TabIndex = 18
+        Me.btnClear.Text = "Clear Console"
+        Me.btnClear.UseVisualStyleBackColor = True
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(701, 344)
+        Me.Controls.Add(Me.btnClear)
         Me.Controls.Add(Me.btnb)
         Me.Controls.Add(Me.btnb4)
         Me.Controls.Add(Me.btnb3)
@@ -217,5 +228,6 @@ Partial Class MainForm
     Friend WithEvents btnb3 As System.Windows.Forms.Button
     Friend WithEvents btnb4 As System.Windows.Forms.Button
     Friend WithEvents btnb As System.Windows.Forms.Button
+    Friend WithEvents btnClear As System.Windows.Forms.Button
 
 End Class

@@ -86,12 +86,12 @@ Public Class MainForm
 
                 SerialPort1.Open()
                 chkConnected.Checked = True
-                writeConsoleNewline("Connected via " + comPort)
+                writeConsoleNewline("Connected via " & comPort)
                 writeConsoleNewline("")
 
             Catch ex As Exception
                 chkConnected.Checked = False
-                writeConsoleNewline("Connection via " + comPort + " has failed: timeout.")
+                writeConsoleNewline("Connection via " & comPort & " has failed: timeout.")
                 MessageBox.Show("Serial Port read timed out.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
 
@@ -104,7 +104,7 @@ Public Class MainForm
         ' Check SerialPort connection every second
         If ((SerialPort1.IsOpen = False) And (CBool(chkConnected.CheckState) = True)) Then
             ' If serial port drops connection
-            writeConsoleNewline("ERROR: Connection on " + comPort + " has been lost.")
+            writeConsoleNewline("ERROR: Connection on " & comPort & " has been lost.")
         ElseIf ((SerialPort1.IsOpen = True) And (CBool(chkConnected.CheckState) = False)) Then
             ' If serial port gains connection
             chkConnected.Checked = SerialPort1.IsOpen
@@ -267,7 +267,7 @@ Public Class MainForm
         End While
 
         printing = False    'Pause printing so we can read the next 9 bytes
-        Dim command As String = "b" & Str(i)
+        Dim command As String = "b" & CStr(i)
         writeData(command)
         ' b1 returns channels 4,5,6,7
         ' b2 returns channels 8,9,10,11
@@ -275,19 +275,28 @@ Public Class MainForm
         ' b4 returns channels 16,17,18,19
 
         ' Verify group number
-        Dim group As Integer = SerialPort1.ReadByte()
+        Dim group As Integer = SerialPort1.ReadByte
         writeConsoleNewline(CStr(group))
-        If (group <> 1) Then    ' aka !=
+        If (group <> i) Then    ' aka !=
+            writeConsoleNewline("ERROR: Received " & CStr(group) & " when expecting " & CStr(i) & ".")
+            writeConsoleNewline("       Aborting this command.")
             Exit Sub
         End If
 
         'Read next 8 bytes
         For j As Integer = (4 * i) To ((4 * i) + 3)
-            channels(j) = SerialPort1.ReadByte() << 8           ' shift HI one byte left
-            channels(j) = channels(j) Or SerialPort1.ReadByte() ' bitwise or
-            writeConsoleNewline(CStr(channels(j)))              ' print to lstConsole
-            lstConsole.Items.Add("in loop")
-            lstConsole.Items.Add("test")
+            Try
+
+                channels(j) = (SerialPort1.ReadByte)          ' shift HI one byte left
+                channels(j) = channels(j) << 8
+                channels(j) = channels(j) Or SerialPort1.ReadByte ' bitwise or
+                writeConsoleNewline(CStr(channels(j)))              ' print to lstConsole
+
+            Catch ex As TimeoutException
+                writeConsoleNewline("Error: Serial Port time out.")
+            Catch ex As InvalidOperationException
+                writeConsoleNewline("Error: Serial Port is closed.")
+            End Try
         Next
 
         ' TODO: Refresh form
@@ -319,6 +328,11 @@ Public Class MainForm
             b(i)
         Next
     End Sub
+
+    Private Sub btnClear_Click(sender As Object, e As EventArgs) Handles btnClear.Click
+        lstConsole.Items.Clear()
+    End Sub
+
 End Class
 
 
