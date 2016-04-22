@@ -141,12 +141,6 @@ Public Class MainForm
 
     End Sub
 
-    Private Sub btnTest_Click(sender As Object, e As EventArgs)
-        'Test functions/interacting with other controls
-        writeConsoleNewline(CStr(Keys.Enter))
-        writeConsoleNewline(CStr(Keys.Return))
-    End Sub
-
     ' Automatically scroll the list box
     Sub scrollConsole()
         If (chkScrolling.Checked) Then
@@ -274,13 +268,6 @@ Public Class MainForm
         Next
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-
-        writeConsoleNewline("This button does nothing.")
-        writeConsoleNewline("Curiosity killed the cat?")
-
-    End Sub
-
     Private Sub chkScrolling_CheckedChanged(sender As Object, e As EventArgs) Handles chkScrolling.CheckedChanged
         chkScrolling.Checked = scrolling
         scrolling = Not scrolling
@@ -330,8 +317,6 @@ Public Class MainForm
             End Try
         Next
 
-        ' TODO: Refresh form
-
         'Resume printing
         printing = True
 
@@ -340,33 +325,25 @@ Public Class MainForm
 
     Private Sub btnb1_Click(sender As Object, e As EventArgs) Handles btnb1.Click
         b(1)
-        drawMask()
     End Sub
 
     Private Sub btnb2_Click(sender As Object, e As EventArgs) Handles btnb2.Click
         b(2)
-        drawMask()
-
     End Sub
 
     Private Sub btnb3_Click(sender As Object, e As EventArgs) Handles btnb3.Click
         b(3)
-        drawMask()
-
     End Sub
 
     Private Sub btnb4_Click(sender As Object, e As EventArgs) Handles btnb4.Click
         b(4)
-        drawMask()
-
     End Sub
 
     Private Sub btnb_Click(sender As Object, e As EventArgs) Handles btnb.Click
         For i As Integer = 1 To 4
             b(i)
         Next
-        drawMask()
-
+        drawPads()
     End Sub
 
     Private Sub btnClear_Click(sender As Object, e As EventArgs) Handles btnClear.Click
@@ -396,7 +373,7 @@ Public Class MainForm
 
     Private Sub btnbLoop_Click(sender As Object, e As EventArgs) Handles btnbLoop.Click
         ' Runs for about 15 seconds. 
-        For j As Integer = 0 To 100
+        For j As Integer = 0 To 80
             For i As Integer = 1 To 4
                 b(i)
             Next
