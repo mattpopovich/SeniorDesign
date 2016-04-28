@@ -280,42 +280,44 @@ Public Class MainForm
 
     Sub b(ByVal i As Integer)
 
-        While (SerialPort1.BytesToRead <> 0) ' aka !=
-            'Wait here until the buffer is empty
-        End While
-
         printing = False    'Pause printing so we can read the next 9 bytes
-        Dim command As String = "b" & CStr(i)
-        writeData(command)
-        ' b1 returns channels 4,5,6,7
-        ' b2 returns channels 8,9,10,11
-        ' b3 returns channels 12,13,14,15
-        ' b4 returns channels 16,17,18,19
 
-        ' Verify group number
-        Dim group As Integer = SerialPort1.ReadByte
-        writeConsoleNewline(CStr(group))
-        If (group <> i) Then    ' aka !=
-            writeConsoleNewline("ERROR: Received " & CStr(group) & " when expecting " & CStr(i) & ".")
-            writeConsoleNewline("       Aborting this command.")
-            Exit Sub
-        End If
+        Try
 
-        'Read next 8 bytes
-        For j As Integer = (4 * i) To ((4 * i) + 3)
-            Try
+            While (SerialPort1.BytesToRead <> 0) ' aka !=
+                'Wait here until the buffer is empty
+            End While
 
+
+            Dim command As String = "b" & CStr(i)
+            writeData(command)
+            ' b1 returns channels 4,5,6,7
+            ' b2 returns channels 8,9,10,11
+            ' b3 returns channels 12,13,14,15
+            ' b4 returns channels 16,17,18,19
+
+            ' Verify group number
+            Dim group As Integer = SerialPort1.ReadByte
+            writeConsoleNewline(CStr(group))
+            If (group <> i) Then    ' aka !=
+                writeConsoleNewline("ERROR: Received " & CStr(group) & " when expecting " & CStr(i) & ".")
+                writeConsoleNewline("       Aborting this command.")
+                Exit Sub
+            End If
+
+            'Read next 8 bytes
+            For j As Integer = (4 * i) To ((4 * i) + 3)
                 channels(j) = (SerialPort1.ReadByte)          ' shift HI one byte left
                 channels(j) = channels(j) << 8
                 channels(j) = channels(j) Or SerialPort1.ReadByte ' bitwise or
                 writeConsoleNewline(CStr(channels(j)))              ' print to lstConsole
+            Next
 
-            Catch ex As TimeoutException
-                writeConsoleNewline("Error: Serial Port time out.")
-            Catch ex As InvalidOperationException
-                writeConsoleNewline("Error: Serial Port is closed.")
-            End Try
-        Next
+        Catch ex As TimeoutException
+            writeConsoleNewline("Error: Serial Port time out.")
+        Catch ex As InvalidOperationException
+            writeConsoleNewline("Error: Serial Port is closed.")
+        End Try
 
         'Resume printing
         printing = True
