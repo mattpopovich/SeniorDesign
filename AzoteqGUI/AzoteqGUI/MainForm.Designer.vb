@@ -92,6 +92,7 @@ Partial Class MainForm
         '
         'txtWrite
         '
+        Me.txtWrite.AcceptsReturn = True
         Me.txtWrite.Location = New System.Drawing.Point(12, 37)
         Me.txtWrite.Name = "txtWrite"
         Me.txtWrite.Size = New System.Drawing.Size(188, 20)
