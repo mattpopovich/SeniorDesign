@@ -26,6 +26,7 @@ Public Class MainForm
     Dim TIMEOUT As Integer = 1000
     Dim scrolling As Boolean = True
     Dim printing As Boolean = True
+    Dim reading As Boolean = True
     Dim channels(20) As Integer
     Friend WithEvents MaskBox As System.Windows.Forms.PictureBox
 
@@ -56,7 +57,7 @@ Public Class MainForm
         Try
             SerialPort1.Write(data)     'Does not append newline character
         Catch ex As Exception
-            MessageBox.Show("Could not write to serial port.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("Could not write to serial port: " & ex.Message & ".", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
         ' Add data to console
@@ -104,15 +105,16 @@ Public Class MainForm
     Private Sub tmrConnected_Tick(sender As Object, e As EventArgs) Handles tmrConnected.Tick
 
         ' Check SerialPort connection every second
-        If ((SerialPort1.IsOpen = False) And (CBool(chkConnected.CheckState) = True)) Then
+        If ((SerialPort1.IsOpen = False) And (chkConnected.Checked = True)) Then
             ' If serial port drops connection
             writeConsoleNewline("ERROR: Connection on " & comPort & " has been lost.")
-        ElseIf ((SerialPort1.IsOpen = True) And (CBool(chkConnected.CheckState) = False)) Then
+            chkConnected.Checked = False
+        ElseIf ((SerialPort1.IsOpen = True) And (chkConnected.Checked = False)) Then
             ' If serial port gains connection
             chkConnected.Checked = SerialPort1.IsOpen
         End If
 
-        If (chkConnected.Checked And chkPrinting.Checked) Then
+        If (chkConnected.Checked And reading) Then
             ' COM Port is connected and user wants it printed to console
             '   Let's see if it has any newdata
 
@@ -135,6 +137,8 @@ Public Class MainForm
                 writeConsoleNewline("Error: Serial Port time out.")
             Catch ex As InvalidOperationException
                 writeConsoleNewline("Error: Serial Port is closed.")
+            Catch ex As Exception
+                writeConsoleNewline("Error: Unknown error: " & ex.Message)
             End Try
 
         End If
@@ -150,8 +154,11 @@ Public Class MainForm
 
     ' Write to console with a newline and automatically scroll
     Sub writeConsoleNewline(ByVal data As String)
-        lstConsole.Items.Add(data)
-        scrollConsole()
+
+        If (chkPrinting.Checked) Then
+            lstConsole.Items.Add(data)
+            scrollConsole()
+        End If
 
         ' TODO: Write all data received via serial port to console (think interrupt)
         '       (not just stuff I want to read and write)
@@ -159,14 +166,16 @@ Public Class MainForm
 
     ' Write to console without a newline and automatically scroll
     Sub writeConsole(ByVal data As String)
-        Dim last As String
-        last = CStr(lstConsole.Items(lstConsole.Items.Count - 1))
-        ' Remove the last item in the listbox
-        lstConsole.Items.RemoveAt(lstConsole.Items.Count - 1)
-        ' Add the last line back to listbox + new byte
-        lstConsole.Items.Add(CStr(last) + data)
+        If (chkPrinting.Checked) Then
+            Dim last As String
+            last = CStr(lstConsole.Items(lstConsole.Items.Count - 1))
+            ' Remove the last item in the listbox
+            lstConsole.Items.RemoveAt(lstConsole.Items.Count - 1)
+            ' Add the last line back to listbox + new byte
+            lstConsole.Items.Add(CStr(last) + data)
 
-        scrollConsole()
+            scrollConsole()
+        End If
     End Sub
 
     ' When the user clicks on the 'Write' button
@@ -185,7 +194,7 @@ Public Class MainForm
     ' When the user presses enter in the 'Write' text box
     Private Sub txtWrite_KeyDown(sender As Object, e As KeyEventArgs) Handles txtWrite.KeyDown
         ' Make sure user pressed the enter key and not any key
-        If (e.KeyCode = Keys.Enter) Then
+        If (e.KeyCode = Keys.Return) Then
             btnWrite.PerformClick()
         End If
     End Sub
@@ -269,22 +278,18 @@ Public Class MainForm
     End Sub
 
     Private Sub chkScrolling_CheckedChanged(sender As Object, e As EventArgs) Handles chkScrolling.CheckedChanged
-        chkScrolling.Checked = scrolling
-        scrolling = Not scrolling
+        scrolling = chkScrolling.Checked
     End Sub
 
     Private Sub chkPrinting_CheckedChanged(sender As Object, e As EventArgs) Handles chkPrinting.CheckedChanged
-        chkPrinting.Checked = printing
-        printing = Not printing
+        printing = chkPrinting.Checked
     End Sub
 
     Sub b(ByVal i As Integer)
-
         While (SerialPort1.BytesToRead <> 0) ' aka !=
             'Wait here until the buffer is empty
         End While
 
-        printing = False    'Pause printing so we can read the next 9 bytes
         Dim command As String = "b" & CStr(i)
         writeData(command)
         ' b1 returns channels 4,5,6,7
@@ -303,23 +308,11 @@ Public Class MainForm
 
         'Read next 8 bytes
         For j As Integer = (4 * i) To ((4 * i) + 3)
-            Try
-
-                channels(j) = (SerialPort1.ReadByte)          ' shift HI one byte left
-                channels(j) = channels(j) << 8
-                channels(j) = channels(j) Or SerialPort1.ReadByte ' bitwise or
-                writeConsoleNewline(CStr(channels(j)))              ' print to lstConsole
-
-            Catch ex As TimeoutException
-                writeConsoleNewline("Error: Serial Port time out.")
-            Catch ex As InvalidOperationException
-                writeConsoleNewline("Error: Serial Port is closed.")
-            End Try
+            channels(j) = (SerialPort1.ReadByte)          ' shift HI one byte left
+            channels(j) = channels(j) << 8
+            channels(j) = channels(j) Or SerialPort1.ReadByte ' bitwise or
+            writeConsoleNewline(CStr(channels(j)))              ' print to lstConsole
         Next
-
-        'Resume printing
-        printing = True
-
     End Sub
 
 
@@ -362,24 +355,31 @@ Public Class MainForm
         printing = True
     End Sub
 
-    Private Sub MaskBox_Click(sender As Object, e As EventArgs) Handles MaskBox.Click
-
-    End Sub
-
     Private Sub MainForm_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
         ' Initialize mask picture
         drawMask()
     End Sub
 
     Private Sub btnbLoop_Click(sender As Object, e As EventArgs) Handles btnbLoop.Click
+        lstConsole.Items.Add("Started sampling...")
         ' Runs for about 15 seconds. 
-        For j As Integer = 0 To 80
-            For i As Integer = 1 To 4
-                b(i)
+        Try
+            For j As Integer = 0 To 80
+                For i As Integer = 1 To 4
+                    b(i)
+                Next
+                drawPads()
             Next
-            drawPads()
-        Next
-
+        Catch ex As TimeoutException
+            writeConsoleNewline("Error: Serial Port time out.")
+        Catch ex As InvalidOperationException
+            writeConsoleNewline("Error: Serial Port is closed.")
+        Catch ex As System.IO.IOException
+            writeConsoleNewline("Error: USB Cable has become unplugged.")
+        Catch ex As Exception
+            writeConsoleNewline("Error: Exception " & ex.Message & " occurred in b() function.")
+        End Try
+        lstConsole.Items.Add("done!")
     End Sub
 End Class
 

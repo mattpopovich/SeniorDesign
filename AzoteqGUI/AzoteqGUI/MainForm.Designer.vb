@@ -31,7 +31,6 @@ Partial Class MainForm
         Me.tmrConnected = New System.Windows.Forms.Timer(Me.components)
         Me.txtWrite = New System.Windows.Forms.TextBox()
         Me.btnWrite = New System.Windows.Forms.Button()
-        Me.Button1 = New System.Windows.Forms.Button()
         Me.chkScrolling = New System.Windows.Forms.CheckBox()
         Me.chkPrinting = New System.Windows.Forms.CheckBox()
         Me.btnb1 = New System.Windows.Forms.Button()
@@ -93,6 +92,7 @@ Partial Class MainForm
         '
         'txtWrite
         '
+        Me.txtWrite.AcceptsReturn = True
         Me.txtWrite.Location = New System.Drawing.Point(12, 37)
         Me.txtWrite.Name = "txtWrite"
         Me.txtWrite.Size = New System.Drawing.Size(188, 20)
@@ -106,15 +106,6 @@ Partial Class MainForm
         Me.btnWrite.TabIndex = 9
         Me.btnWrite.Text = "Serial Write"
         Me.btnWrite.UseVisualStyleBackColor = True
-        '
-        'Button1
-        '
-        Me.Button1.Location = New System.Drawing.Point(288, 277)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(82, 23)
-        Me.Button1.TabIndex = 10
-        Me.Button1.Text = "Button1"
-        Me.Button1.UseVisualStyleBackColor = True
         '
         'chkScrolling
         '
@@ -213,7 +204,7 @@ Partial Class MainForm
         Me.btnbLoop.Name = "btnbLoop"
         Me.btnbLoop.Size = New System.Drawing.Size(82, 23)
         Me.btnbLoop.TabIndex = 21
-        Me.btnbLoop.Text = "SS"
+        Me.btnbLoop.Text = "Sample 15s"
         Me.btnbLoop.UseVisualStyleBackColor = True
         '
         'MainForm
@@ -232,7 +223,6 @@ Partial Class MainForm
         Me.Controls.Add(Me.btnb1)
         Me.Controls.Add(Me.chkPrinting)
         Me.Controls.Add(Me.chkScrolling)
-        Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.btnWrite)
         Me.Controls.Add(Me.txtWrite)
         Me.Controls.Add(Me.chkConnected)
@@ -254,7 +244,6 @@ Partial Class MainForm
     Friend WithEvents tmrConnected As System.Windows.Forms.Timer
     Friend WithEvents txtWrite As System.Windows.Forms.TextBox
     Friend WithEvents btnWrite As System.Windows.Forms.Button
-    Friend WithEvents Button1 As System.Windows.Forms.Button
     Friend WithEvents chkScrolling As System.Windows.Forms.CheckBox
     Friend WithEvents chkPrinting As System.Windows.Forms.CheckBox
     Friend WithEvents btnb1 As System.Windows.Forms.Button
